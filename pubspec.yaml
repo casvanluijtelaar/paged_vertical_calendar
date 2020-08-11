@@ -1,7 +1,6 @@
 name: vertical_calendar
-description: A new flutter plugin project.
-version: 1.0.0
-author:
+description: A really simple calendar with a vertical scroll.
+version: 1.0.1
 homepage: https://github.com/g123k/flutter_vertical_calendar
 
 environment:
