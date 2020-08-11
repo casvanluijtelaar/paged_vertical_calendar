@@ -91,6 +91,8 @@ class _VerticalCalendarState extends State<VerticalCalendar> {
                               });
                             }
 
+                            widget.onRangeSelected(rangeMinDate, rangeMaxDate);
+
                             if (widget.onDayPressed != null) {
                               widget.onDayPressed(date);
                             }

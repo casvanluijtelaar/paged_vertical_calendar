@@ -1,3 +1,7 @@
+## [1.0.1+2] - 11th August 2020
+
+* Bugfix: `onRangeSelected` was never called
+
 ## [1.0.1] - 11th August 2020
 
 * Add a `listPadding` argument to add vertical and horizontal padding to the global list
