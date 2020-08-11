@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/vertical_calendar.iml" filepath="$PROJECT_DIR$/vertical_calendar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/vertical_calendar_android.iml" filepath="$PROJECT_DIR$/android/vertical_calendar_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example/android/vertical_calendar_example_android.iml" filepath="$PROJECT_DIR$/example/android/vertical_calendar_example_android.iml" />
+    </modules>
+  </component>
+</project>
