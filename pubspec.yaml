@@ -1,6 +1,6 @@
 name: vertical_calendar
 description: A really simple calendar with a vertical scroll (including range selection).
-version: 1.0.1+2
+version: 1.0.1+4
 homepage: https://github.com/g123k/flutter_vertical_calendar
 
 environment:

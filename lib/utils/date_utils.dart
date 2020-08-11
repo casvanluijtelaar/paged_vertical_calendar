@@ -34,6 +34,10 @@ class DateUtils {
         lastDayOfWeek = _lastDayOfWeek(firstDayOfWeek);
       }
 
+      if (!lastDayOfWeek.isBefore(weekMaxDate)) {
+        weeks.add(Week(firstDayOfWeek, lastDayOfWeek));
+      }
+
       months.add(Month(weeks));
 
       return months;

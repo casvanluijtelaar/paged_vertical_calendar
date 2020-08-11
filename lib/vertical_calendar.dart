@@ -8,18 +8,21 @@ class VerticalCalendar extends StatefulWidget {
   final DateTime maxDate;
   final MonthBuilder monthBuilder;
   final DayBuilder dayBuilder;
+  final DateTime initialMinDate;
+  final DateTime initialMaxDate;
   final ValueChanged<DateTime> onDayPressed;
   final PeriodChanged onRangeSelected;
   final EdgeInsetsGeometry listPadding;
 
-  VerticalCalendar(
-      {@required this.minDate,
-      @required this.maxDate,
-      this.monthBuilder,
-      this.dayBuilder,
-      this.onDayPressed,
-      this.onRangeSelected,
-      this.listPadding})
+  VerticalCalendar({@required this.minDate,
+    @required this.maxDate,
+    this.monthBuilder,
+    this.dayBuilder,
+    this.onDayPressed,
+    this.onRangeSelected,
+    this.initialMinDate,
+    this.initialMaxDate,
+    this.listPadding})
       : assert(minDate != null),
         assert(maxDate != null),
         assert(minDate.isBefore(maxDate));
@@ -41,6 +44,8 @@ class _VerticalCalendarState extends State<VerticalCalendar> {
     _months = DateUtils.extractWeeks(widget.minDate, widget.maxDate);
     _minDate = widget.minDate.removeTime();
     _maxDate = widget.maxDate.removeTime();
+    rangeMinDate = widget.initialMinDate;
+    rangeMaxDate = widget.initialMaxDate;
   }
 
   @override
@@ -62,8 +67,11 @@ class _VerticalCalendarState extends State<VerticalCalendar> {
         Expanded(
           child: ListView.builder(
               cacheExtent:
-                  (MediaQuery.of(context).size.width / DateTime.daysPerWeek) *
-                      6,
+              (MediaQuery
+                  .of(context)
+                  .size
+                  .width / DateTime.daysPerWeek) *
+                  6,
               padding: widget.listPadding ?? EdgeInsets.zero,
               itemCount: _months.length,
               itemBuilder: (BuildContext context, int position) {
@@ -75,28 +83,28 @@ class _VerticalCalendarState extends State<VerticalCalendar> {
                     dayBuilder: widget.dayBuilder,
                     onDayPressed: widget.onRangeSelected != null
                         ? (DateTime date) {
-                            if (rangeMinDate == null || rangeMaxDate != null) {
-                              setState(() {
-                                rangeMinDate = date;
-                                rangeMaxDate = null;
-                              });
-                            } else if (date.isBefore(rangeMinDate)) {
-                              setState(() {
-                                rangeMaxDate = rangeMinDate;
-                                rangeMinDate = rangeMinDate;
-                              });
-                            } else {
-                              setState(() {
-                                rangeMaxDate = date;
-                              });
-                            }
+                      if (rangeMinDate == null || rangeMaxDate != null) {
+                        setState(() {
+                          rangeMinDate = date;
+                          rangeMaxDate = null;
+                        });
+                      } else if (date.isBefore(rangeMinDate)) {
+                        setState(() {
+                          rangeMaxDate = rangeMinDate;
+                          rangeMinDate = date;
+                        });
+                      } else if (date.isAfter(rangeMinDate)) {
+                        setState(() {
+                          rangeMaxDate = date;
+                        });
+                      }
 
-                            widget.onRangeSelected(rangeMinDate, rangeMaxDate);
+                      widget.onRangeSelected(rangeMinDate, rangeMaxDate);
 
-                            if (widget.onDayPressed != null) {
-                              widget.onDayPressed(date);
-                            }
-                          }
+                      if (widget.onDayPressed != null) {
+                        widget.onDayPressed(date);
+                      }
+                    }
                         : widget.onDayPressed,
                     rangeMinDate: rangeMinDate,
                     rangeMaxDate: rangeMaxDate);
@@ -117,16 +125,15 @@ class _MonthView extends StatelessWidget {
   final DateTime rangeMinDate;
   final DateTime rangeMaxDate;
 
-  _MonthView(
-      {@required this.month,
-      @required this.minDate,
-      @required this.maxDate,
-      this.monthBuilder,
-      this.dayBuilder,
-      this.onDayPressed,
-      this.rangeMinDate,
-      this.rangeMaxDate,
-      Key key})
+  _MonthView({@required this.month,
+    @required this.minDate,
+    @required this.maxDate,
+    this.monthBuilder,
+    this.dayBuilder,
+    this.onDayPressed,
+    this.rangeMinDate,
+    this.rangeMaxDate,
+    Key key})
       : super(key: key);
 
   @override
@@ -151,42 +158,43 @@ class _MonthView extends StatelessWidget {
 
     return TableRow(
         children: List<Widget>.generate(DateTime.daysPerWeek, (int position) {
-      DateTime day = DateTime(week.firstDay.year, week.firstDay.month,
-          firstDay.day + (position - (firstDay.weekday - 1)));
+          DateTime day = DateTime(week.firstDay.year, week.firstDay.month,
+              firstDay.day + (position - (firstDay.weekday - 1)));
 
-      if ((position + 1) < week.firstDay.weekday ||
-          (position + 1) > week.lastDay.weekday ||
-          day.isBefore(minDate) ||
-          day.isAfter(maxDate)) {
-        return const SizedBox();
-      } else {
-        bool isSelected = false;
-
-        if (rangeFeatureEnabled) {
-          if (rangeMinDate != null && rangeMaxDate != null) {
-            isSelected = day.isSameDayOrAfter(rangeMinDate) &&
-                day.isSameDayOrBefore(rangeMaxDate);
+          if ((position + 1) < week.firstDay.weekday ||
+              (position + 1) > week.lastDay.weekday ||
+              day.isBefore(minDate) ||
+              day.isAfter(maxDate)) {
+            return const SizedBox();
           } else {
-            isSelected = day.isAtSameMomentAs(rangeMinDate);
-          }
-        }
+            bool isSelected = false;
 
-        return AspectRatio(
-            aspectRatio: 1.0,
-            child: GestureDetector(
-              onTap: onDayPressed != null
-                  ? () {
-                      if (onDayPressed != null) {
-                        onDayPressed(day);
-                      }
+            if (rangeFeatureEnabled) {
+              if (rangeMinDate != null && rangeMaxDate != null) {
+                isSelected = day.isSameDayOrAfter(rangeMinDate) &&
+                    day.isSameDayOrBefore(rangeMaxDate);
+              } else {
+                isSelected = day.isAtSameMomentAs(rangeMinDate);
+              }
+            }
+
+            return AspectRatio(
+                aspectRatio: 1.0,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: onDayPressed != null
+                      ? () {
+                    if (onDayPressed != null) {
+                      onDayPressed(day);
                     }
-                  : null,
-              child: dayBuilder != null
-                  ? dayBuilder(context, day, isSelected: isSelected)
-                  : _DefaultDayView(date: day, isSelected: isSelected),
-            ));
-      }
-    }, growable: false));
+                  }
+                      : null,
+                  child: dayBuilder != null
+                      ? dayBuilder(context, day, isSelected: isSelected)
+                      : _DefaultDayView(date: day, isSelected: isSelected),
+                ));
+          }
+        }, growable: false));
   }
 }
 
@@ -202,7 +210,10 @@ class _DefaultMonthView extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Text(
         DateFormat('MMMM yyyy').format(DateTime(year, month)),
-        style: Theme.of(context).textTheme.headline5,
+        style: Theme
+            .of(context)
+            .textTheme
+            .headline5,
       ),
     );
   }

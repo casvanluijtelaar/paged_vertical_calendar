@@ -1,6 +1,6 @@
-## [1.0.1+2] - 11th August 2020
+## [1.0.1+4] - 12th August 2020
 
-* Bugfix: `onRangeSelected` was never called
+* Bugfixes
 
 ## [1.0.1] - 11th August 2020
 
