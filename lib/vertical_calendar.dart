@@ -10,6 +10,7 @@ class VerticalCalendar extends StatefulWidget {
   final DayBuilder dayBuilder;
   final ValueChanged<DateTime> onDayPressed;
   final PeriodChanged onRangeSelected;
+  final EdgeInsetsGeometry listPadding;
 
   VerticalCalendar(
       {@required this.minDate,
@@ -17,7 +18,8 @@ class VerticalCalendar extends StatefulWidget {
       this.monthBuilder,
       this.dayBuilder,
       this.onDayPressed,
-      this.onRangeSelected})
+      this.onRangeSelected,
+      this.listPadding})
       : assert(minDate != null),
         assert(maxDate != null),
         assert(minDate.isBefore(maxDate));
@@ -62,6 +64,7 @@ class _VerticalCalendarState extends State<VerticalCalendar> {
               cacheExtent:
                   (MediaQuery.of(context).size.width / DateTime.daysPerWeek) *
                       6,
+              padding: widget.listPadding ?? EdgeInsets.zero,
               itemCount: _months.length,
               itemBuilder: (BuildContext context, int position) {
                 return _MonthView(
