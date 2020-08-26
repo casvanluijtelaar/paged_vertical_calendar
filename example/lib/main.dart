@@ -11,7 +11,7 @@ void main() {
         ),
         body: VerticalCalendar(
           minDate: DateTime.now(),
-          maxDate: DateTime.now().add(const Duration(days: 365)),
+          maxDate: DateTime.now().add(const Duration(days: 369)),
           onDayPressed: (DateTime date) {
             print('Date selected: $date');
           },
