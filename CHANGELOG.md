@@ -1,7 +1,3 @@
-## [1.0.1+5] - 26th August 2020
-
-* Remove Android/iOS folders, since it's a pure Dart library
-
 ## [1.0.1+4] - 12th August 2020
 
 * Bugfixes
