@@ -21,7 +21,10 @@ class DateUtils {
         weeks.add(week);
 
         if (week.isLastWeekOfMonth) {
-          months.add(Month(weeks));
+          if (lastDayOfWeek.isSameDayOrAfter(minDate)) {
+            months.add(Month(weeks));
+          }
+
           weeks = List<Week>();
 
           firstDayOfWeek = firstDayOfWeek.toFirstDayOfNextMonth();
