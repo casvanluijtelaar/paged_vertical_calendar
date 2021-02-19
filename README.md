@@ -12,9 +12,9 @@
 
 
 <p align="center">
-  <img src="assets/style_comp.gif" alt="drawing" width="200"/>
-  <img src="assets/range_comp.gif" alt="drawing" width="200"/>
-  <img src="assets/paged_comp.gif" alt="drawing" width="200"/>
+  <img src="https://github.com/casvanluijtelaar/paged_vertical_calendar/blob/master/assets/style_comp.gif" alt="gif showing of package customizability" width="200"/>
+  <img src="https://github.com/casvanluijtelaar/paged_vertical_calendar/blob/master/assets/range_comp.gif" alt="gif showing dat range picker example" width="200"/>
+  <img src="https://github.com/casvanluijtelaar/paged_vertical_calendar/blob/master/assets/paged_comp.gif" alt="gif showing paged data example" width="200"/>
 <p\>
 
 ## :hammer: How it works 
