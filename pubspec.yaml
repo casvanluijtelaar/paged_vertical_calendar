@@ -1,6 +1,7 @@
 name: paged_vertical_calendar
 description: A simple paginated framework for implementing calendar based interfaces.
 homepage: https://github.com/casvanluijtelaar/paged_vertical_calendar.git
+repository: https://github.com/casvanluijtelaar/paged_vertical_calendar.git
 authors:
   - "casvanluijtelaar"
 version: 0.0.1
