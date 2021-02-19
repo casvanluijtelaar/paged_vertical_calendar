@@ -77,4 +77,4 @@ PagedVerticalCalendar(
 
 ## :wave: Get Involved
 
-If this package is useful to you please :thumbsup: on [pub.dev](https://pub.dev/packages) and :star: on github. If you have any Issues, recommendtions or pull requests I'd love to see them!
+If this package is useful to you please :thumbsup: on [pub.dev](https://pub.dev/packages) and :star: on github. If you have any Issues, recommendations or pull requests I'd love to see them!
