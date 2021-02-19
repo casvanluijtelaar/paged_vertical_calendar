@@ -3,8 +3,7 @@
 [![Pub](https://img.shields.io/pub/v/paged_vertical_calendar)](https://pub.dartlang.org/packages/paged_vertical_calendar)
 [![Pub](https://img.shields.io/github/stars/casvanluijtelaar/paged_vertical_calendar)](https://github.com/casvanluijtelaar/paged_vertical_calendar)
 [![Pub](https://img.shields.io/github/last-commit/casvanluijtelaar/paged_vertical_calendar)](https://github.com/casvanluijtelaar/paged_vertical_calendar)
-
-
+[![Pub](https://github.com/EdsonBueno/infinite_scroll_pagination/workflows/build/badge.svg)](https://github.com/casvanluijtelaar/paged_vertical_calendar)
 
 <p align="center">
     A simple paginated framework for implementing calendar based interfaces.
