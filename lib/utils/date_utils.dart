@@ -1,50 +1,33 @@
-import 'package:vertical_calendar/utils/date_models.dart';
+import 'package:paged_vertical_calendar/utils/date_models.dart';
 
 class DateUtils {
-  static List<Month> extractWeeks(DateTime minDate, DateTime maxDate) {
-    DateTime weekMinDate = _findDayOfWeekInMonth(minDate, DateTime.monday);
-    DateTime weekMaxDate = _findDayOfWeekInMonth(maxDate, DateTime.sunday);
+  static Month getMonth(DateTime minDate, DateTime maxDate, int monthPage) {
+    DateTime startDate = (minDate ?? DateTime.now()).removeTime();
+    if (monthPage > 0)
+      startDate = DateTime(startDate.year, startDate.month + monthPage, 1);
+
+    DateTime weekMinDate = _findDayOfWeekInMonth(startDate, startDate.weekday);
 
     DateTime firstDayOfWeek = weekMinDate;
     DateTime lastDayOfWeek = _lastDayOfWeek(weekMinDate);
 
-    if (!lastDayOfWeek.isBefore(weekMaxDate)) {
-      return <Month>[
-        Month(<Week>[Week(firstDayOfWeek, lastDayOfWeek)])
-      ];
-    } else {
-      List<Month> months = List<Month>();
-      List<Week> weeks = List<Week>();
+    List<Week> weeks = List<Week>();
 
-      while (lastDayOfWeek.isBefore(weekMaxDate)) {
-        Week week = Week(firstDayOfWeek, lastDayOfWeek);
+    while (true) {
+      if (maxDate != null && lastDayOfWeek.isAfter(maxDate)) {
+        Week week = Week(firstDayOfWeek, maxDate);
         weeks.add(week);
-
-        if (week.isLastWeekOfMonth) {
-          if (lastDayOfWeek.isSameDayOrAfter(minDate)) {
-            months.add(Month(weeks));
-          }
-
-          weeks = List<Week>();
-
-          firstDayOfWeek = firstDayOfWeek.toFirstDayOfNextMonth();
-          lastDayOfWeek = _lastDayOfWeek(firstDayOfWeek);
-
-          weeks.add(Week(firstDayOfWeek, lastDayOfWeek));
-        }
-
-        firstDayOfWeek = lastDayOfWeek.nextDay;
-        lastDayOfWeek = _lastDayOfWeek(firstDayOfWeek);
+        break;
       }
+      Week week = Week(firstDayOfWeek, lastDayOfWeek);
+      weeks.add(week);
 
-      if (!lastDayOfWeek.isBefore(weekMaxDate)) {
-        weeks.add(Week(firstDayOfWeek, lastDayOfWeek));
-      }
+      firstDayOfWeek = lastDayOfWeek.nextDay;
+      lastDayOfWeek = _lastDayOfWeek(firstDayOfWeek);
 
-      months.add(Month(weeks));
-
-      return months;
+      if (weeks.last.isLastWeekOfMonth) break;
     }
+    return Month(weeks);
   }
 
   static DateTime _lastDayOfWeek(DateTime firstDayOfWeek) {
@@ -70,7 +53,7 @@ class DateUtils {
 
   static List<int> daysPerMonth(int year) => <int>[
         31,
-        isLeapYear(year) ? 29 : 28,
+        _isLeapYear(year) ? 29 : 28,
         31,
         30,
         31,
@@ -83,40 +66,13 @@ class DateUtils {
         31,
       ];
 
-  static bool isLeapYear(int year) {
-    bool leapYear = false;
-
-    bool leap = ((year % 100 == 0) && (year % 400 != 0));
-    if (leap == true) {
-      return false;
-    } else if (year % 4 == 0) {
-      return true;
-    }
-
-    return leapYear;
+  static bool _isLeapYear(int year) {
+    return (year & 3) == 0 && ((year % 25) != 0 || (year & 15) == 0);
   }
 }
 
 extension DateUtilsExtensions on DateTime {
-  bool get isLeapYear {
-    bool leapYear = false;
-
-    bool leap = ((year % 100 == 0) && (year % 400 != 0));
-    if (leap == true) {
-      return false;
-    } else if (year % 4 == 0) {
-      return true;
-    }
-
-    return leapYear;
-  }
-
   int get daysInMonth => DateUtils.daysPerMonth(year)[month - 1];
-
-  DateTime toFirstDayOfNextMonth() => DateTime(
-        year,
-        month + 1,
-      );
 
   DateTime get nextDay => DateTime(year, month, day + 1);
 

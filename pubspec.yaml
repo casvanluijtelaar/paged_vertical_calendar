@@ -1,20 +1,20 @@
-name: vertical_calendar
-description: A really simple calendar with a vertical scroll (including range selection).
-version: 1.0.1+6
-homepage: https://github.com/g123k/flutter_vertical_calendar
+name: paged_vertical_calendar
+description: A simple paginated framework for implementing calendar based interfaces.
+homepage: https://github.com/casvanluijtelaar/paged_vertical_calendar.git
+authors:
+  - "casvanluijtelaar"
+version: 0.0.1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.20.0 <2.0.0"
+  flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
+  infinite_scroll_pagination: ^2.3.0
   intl: ^0.16.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-flutter:

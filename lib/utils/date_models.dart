@@ -1,4 +1,4 @@
-import 'package:vertical_calendar/utils/date_utils.dart';
+import 'package:paged_vertical_calendar/utils/date_utils.dart';
 
 class Month {
   final int month;

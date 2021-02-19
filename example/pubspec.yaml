@@ -1,16 +1,19 @@
-name: vertical_calendar_example
-description: Demonstrates how to use the vertical_calendar plugin.
+name: paged_vertical_calendar_example
+description: A simple example showing several ways this package can be used to implement calendar related interfaces.
+authors:
+  - "casvanluijtelaar"
+homepage: https://github.com/casvanluijtelaar/paged_vertical_calendar.git
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
-  vertical_calendar:
+  paged_vertical_calendar:
     path: ../
+  intl: ^0.16.1
 
 dev_dependencies:
   flutter_test:

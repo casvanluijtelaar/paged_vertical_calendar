@@ -1,93 +1,76 @@
-# Vertical Flutter Calendar
+# :calendar: Paged Vertical Calendar :calendar:
 
-[![Pub](https://img.shields.io/pub/v/vertical_calendar.svg)](https://pub.dartlang.org/packages/vertical_calendar)
-
-A really simple calendar with a vertical scroll.
+[![Pub](https://img.shields.io/pub/v/paged_vertical_calendar)](https://pub.dartlang.org/packages/paged_vertical_calendar)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/g123k/flutter_vertical_calendar/master/assets/vertical_calendar.gif" style="margin:auto" width="400" 
-height="711">
+    A simple paginated framework for implementing calendar based interfaces.
 </p>
 
-## Getting Started
-
-First, you just have to import the package in your dart files with:
-```dart
-import 'package:vertical_calendar/vertical_calendar.dart';
-```
-
-Then you can use the Widget directly in your hierarchy. Mandatory fields are `minDate` and `maxDate`.
-```dart
-VerticalCalendar(
-  minDate: DateTime.now(),
-  maxDate: DateTime.now().add(const Duration(days: 365)),
-  onDayPressed: (DateTime date) {
-    print('Date selected: $date');
-  },
-  onRangeSelected: (DateTime d1, DateTime d2) {
-    print('Range: from $d1 to $d2');
-  },
-)
-```
-
-## Day selected
-To be notified when the user clicks on a date, just provide a callback:
-
-```dart
-VerticalCalendar(
-  minDate: DateTime.now(),
-  maxDate: DateTime.now().add(const Duration(days: 365)),
-  onDayPressed: (DateTime date) {
-    print('Date selected: $date');
-  },
-)
-```
-
-## Range selection
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/g123k/flutter_vertical_calendar/master/assets/range_selection.gif" style="margin:auto" width="540" 
-height="372">
-</p>
+  <img src="assets/style_comp.gif" alt="drawing" width="200"/>
+  <img src="assets/range_comp.gif" alt="drawing" width="200"/>
+  <img src="assets/paged_comp.gif" alt="drawing" width="200"/>
+<p\>
 
-When `onRangeSelected` callback is provided, automatically the range selector feature will be enabled. 
+## :hammer: How it works 
+`paged_vertical_calendar` is a very minimalistic framework that automatically loads months based on scoll behavior. It provides many useful callbacks to implement your own calendar interactions and builders to customize the calendar as much as you want. Check the example for several implementations like date range selection and paginated data visualisation.
+
+`PagedVerticalCalendar` has no required parameters and can be dropped in anywhere providing it has a fixed height.
 
 ```dart
-VerticalCalendar(
-  minDate: DateTime.now(),
-  maxDate: DateTime.now().add(const Duration(days: 365)),
-  onRangeSelected: (DateTime d1, DateTime d2) {
-      print('Range: from $d1 to $d2');
+Scaffold(
+  home: PagedVerticalCalendar(),
+);
+```
+## :loudspeaker: Callbacks
+
+Several callback are provided to facilitate easy implementation of any calendar interactions
+
+```dart
+PagedVerticalCalendar(
+  invisibleMonthsThreshold: 1,
+  onMonthLoaded: (year, month) {
+    // on month widget load 
   },
-)
-```
-
-Note: if `onDayPressed` is not null, it will still be called.
-
-## Customization
-
-It is possible to change the Widget used for a month:
-```dart
-VerticalCalendar(
-  minDate: DateTime.now(),
-  maxDate: DateTime.now().add(const Duration(days: 365)),
-  monthBuilder: (BuildContext context, int month, int year) {
-    return Text('$month $year');
-  },  
-)
-```
-
-And also for a day:
-```dart
-VerticalCalendar(
-  minDate: DateTime.now(),
-  maxDate: DateTime.now().add(const Duration(days: 365)),
-  dayBuilder: (BuildContext context, DateTime date, {bool isSelected}) {
-    return Text(date.day.toString());
+  onDayPressed: (value) {
+    // on day widget pressed   
   },
-)
+  onPaginationCompleted: () {
+    // on pagination completion
+  },
+);
+```
+`onMonthLoaded` is a callback that fires for every month added to the list. When this function fires can be altered by setting the `invisibleMonthsThreshold` pararamter. 
+
+`invisibleMonthsThreshold` decides how many months outside of the widgets view should be loaded. In other words, how many months should be preloaded before the user reaches that scroll position. It defaults to `1`.
+
+`onDayPressed` is a simple `onPressed` callback but also provides the `DateTime` of the day that has been pressed.
+
+finally when an `endDate` is provided to the `PagedVerticalCalendar`, the `onPaginationCompleted` callback can be used. This is a `VoidCallBack` that indicates when all the months have been loaded.
+
+
+
+
+## :art: Customization
+
+ `PagedVerticalCalendar` provides default calendar styling, but these can be fully customized. To do so, several builders are provided:
+
+```dart
+PagedVerticalCalendar(
+  monthBuilder: (context, month, year) {
+    // provide a month header widget
+  },
+  dayBuilder: (context, date) {
+    // provide a day widget
+  },
+);
 ```
 
-`isSelected` allows you to know if this date is selected during a range selection.
- 
-Note: `isSelected` will always be null, when `onRangeSelected` is null.
+`monthBuilder` provides the year and month as `integers`. this builder has to return a widget that will form the header of ever month. the [intl](https://pub.dev/packages/intl) package works well here for date formatting.
+
+`dayBuilder` provides the day as a `DateTime`. this builder wil be called for every day. You usually want to provide at least a text widget with the current day number. 
+
+## :wave: Get Involved
+
+If this package is useful to you please :thumbsup: on [pub.dev](https://pub.dev/packages) and :star: on github. If you have any Issues, recommendtions or pull requests I'd love to see them!
