@@ -33,9 +33,6 @@ void main() {
     });
   });
 
-
-  
-
   group('widgets', () {
     testWidgets('check 1st month generation', (WidgetTester tester) async {
       await tester.pumpWidget(
