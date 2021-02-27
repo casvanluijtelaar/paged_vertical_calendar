@@ -1,5 +1,5 @@
 name: build
-on: [push, pull_request, check_run, check_suite]
+on: [pull_request]
 jobs: 
   build: 
     runs-on: ubuntu-latest
@@ -10,7 +10,7 @@ jobs:
         java-version: '12.x'
     - uses: subosito/flutter-action@v1
       with:
-        channel: 'stable' 
+        channel: 'beta' 
     - run: flutter pub get
     - run: flutter analyze
-    - run: flutter test
+    - run: flutter test --no-sound-null-safety  
