@@ -5,14 +5,14 @@ repository: https://github.com/casvanluijtelaar/paged_vertical_calendar.git
 version: 0.0.1+3
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0-259.16.beta <3.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  infinite_scroll_pagination: 2.3.0
-  intl: 0.16.1
+  infinite_scroll_pagination: ^3.0.0-nullsafety.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
