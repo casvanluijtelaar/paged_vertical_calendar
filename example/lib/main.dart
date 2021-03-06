@@ -56,7 +56,7 @@ class Custom extends StatelessWidget {
               ),
               child: Text(
                 DateFormat('MMMM yyyy').format(DateTime(year, month)),
-                style: Theme.of(context).textTheme.bodyText1.copyWith(
+                style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       color: Colors.white,
                     ),
               ),
@@ -115,8 +115,8 @@ class DatePicker extends StatefulWidget {
 
 class _DatePickerState extends State<DatePicker> {
   /// store the selected start and end dates
-  DateTime start;
-  DateTime end;
+  DateTime? start;
+  DateTime? end;
 
   /// method to check wether a day is in the selected range
   /// used for highlighting those day
@@ -126,8 +126,8 @@ class _DatePickerState extends State<DatePicker> {
     // if only end is null only the start should be highlighted
     if (end == null) return date == start;
     // if both start and end aren't null check if date false in the range
-    return ((date == start || date.isAfter(start)) &&
-        (date == end || date.isBefore(end)));
+    return ((date == start || date.isAfter(start!)) &&
+        (date == end || date.isBefore(end!)));
   }
 
   @override
@@ -148,14 +148,17 @@ class _DatePickerState extends State<DatePicker> {
       onDayPressed: (date) {
         setState(() {
           // if start is null, assign this date to start
-          if (start == null) return start = date;
+          if (start == null)
+            start = date;
           // if only end is null assign it to the end
-          if (end == null) return end = date;
-
+          else if (end == null)
+            end = date;
           // if both start and end arent null, show results and reset
-          print('selected range from $start to $end');
-          start = null;
-          end = null;
+          else {
+            print('selected range from $start to $end');
+            start = null;
+            end = null;
+          }
         });
       },
     );

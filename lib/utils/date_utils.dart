@@ -1,7 +1,7 @@
 import 'package:paged_vertical_calendar/utils/date_models.dart';
 
 class DateUtils {
-  static Month getMonth(DateTime minDate, DateTime maxDate, int monthPage) {
+  static Month getMonth(DateTime? minDate, DateTime? maxDate, int monthPage) {
     DateTime startDate = (minDate ?? DateTime.now()).removeTime();
     if (monthPage > 0)
       startDate = DateTime(startDate.year, startDate.month + monthPage, 1);
@@ -11,7 +11,7 @@ class DateUtils {
     DateTime firstDayOfWeek = weekMinDate;
     DateTime lastDayOfWeek = _lastDayOfWeek(weekMinDate);
 
-    List<Week> weeks = List<Week>();
+    List<Week> weeks = [];
 
     while (true) {
       if (maxDate != null && lastDayOfWeek.isAfter(maxDate)) {

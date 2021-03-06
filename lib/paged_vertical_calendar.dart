@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DateUtils;
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:paged_vertical_calendar/utils/date_models.dart';
@@ -38,24 +38,24 @@ class PagedVerticalCalendar extends StatefulWidget {
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
   /// `DateTime.now()` will be used
-  final DateTime startDate;
+  final DateTime? startDate;
 
   /// optional [DateTime] to end the calendar pagination, of no [endDate] is
   /// provided the calendar can paginate indefinitely
-  final DateTime endDate;
+  final DateTime? endDate;
 
   /// a Builder used for month header generation. a default [MonthBuilder] is
   /// used when no custom [MonthBuilder] is provided.
   /// * [context]
   /// * [int] year: 2021
   /// * [int] month: 1-12
-  final MonthBuilder monthBuilder;
+  final MonthBuilder? monthBuilder;
 
   /// a Builder used for day generation. a default [DayBuilder] is
   /// used when no custom [DayBuilder] is provided.
   /// * [context]
   /// * [DateTime] date
-  final DayBuilder dayBuilder;
+  final DayBuilder? dayBuilder;
 
   /// if the calendar should stay cached when the widget is no longer loaded.
   /// this can be used for maintaining the last state. defaults to `false`
@@ -63,14 +63,14 @@ class PagedVerticalCalendar extends StatefulWidget {
 
   /// callback that provides the [DateTime] of the day that's been interacted
   /// with
-  final ValueChanged<DateTime> onDayPressed;
+  final ValueChanged<DateTime>? onDayPressed;
 
   /// callback when a new paginated month is loaded.
-  final OnMonthLoaded onMonthLoaded;
+  final OnMonthLoaded? onMonthLoaded;
 
   /// called when the calendar pagination is completed. if no [endDate] is
   /// provided this method is never called
-  final Function onPaginationCompleted;
+  final Function? onPaginationCompleted;
 
   /// how many months should be loaded outside of the view. defaults to `1`
   final int invisibleMonthsThreshold;
@@ -83,7 +83,7 @@ class PagedVerticalCalendar extends StatefulWidget {
 }
 
 class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
-  PagingController<int, Month> controller;
+  late PagingController<int, Month> controller;
 
   @override
   void initState() {
@@ -97,7 +97,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   }
 
   void paginationStatus(PagingStatus state) {
-    if (state == PagingStatus.completed) return widget.onPaginationCompleted();
+    if (state == PagingStatus.completed) return widget.onPaginationCompleted!();
   }
 
   void fetchItems(int pageKey) async {
@@ -109,12 +109,12 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       );
 
       if (widget.onMonthLoaded != null)
-        WidgetsBinding.instance.addPostFrameCallback(
-            (_) => widget.onMonthLoaded(month.year, month.month));
+        WidgetsBinding.instance!.addPostFrameCallback(
+            (_) => widget.onMonthLoaded!(month.year, month.month));
 
       final newItems = [month];
       final isLastPage = widget.endDate != null &&
-          widget.endDate.isSameDayOrBefore(month.weeks.last.lastDay);
+          widget.endDate!.isSameDayOrBefore(month.weeks.last.lastDay);
 
       if (isLastPage) return controller.appendLastPage(newItems);
 
@@ -155,23 +155,23 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
 class _MonthView extends StatelessWidget {
   _MonthView({
-    @required this.month,
+    required this.month,
     this.monthBuilder,
     this.dayBuilder,
     this.onDayPressed,
   });
 
   final Month month;
-  final MonthBuilder monthBuilder;
-  final DayBuilder dayBuilder;
-  final ValueChanged<DateTime> onDayPressed;
+  final MonthBuilder? monthBuilder;
+  final DayBuilder? dayBuilder;
+  final ValueChanged<DateTime>? onDayPressed;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         monthBuilder != null
-            ? monthBuilder(context, month.month, month.year)
+            ? monthBuilder!(context, month.month, month.year)
             : _DefaultMonthView(month: month.month, year: month.year),
         Table(
           children: month.weeks.map((Week week) {
@@ -200,9 +200,9 @@ class _MonthView extends StatelessWidget {
           return AspectRatio(
             aspectRatio: 1.0,
             child: InkWell(
-              onTap: onDayPressed == null ? null : () => onDayPressed(day),
+              onTap: onDayPressed == null ? null : () => onDayPressed!(day),
               child: dayBuilder != null
-                  ? dayBuilder(context, day)
+                  ? dayBuilder!(context, day)
                   : _DefaultDayView(date: day),
             ),
           );
@@ -216,7 +216,7 @@ class _DefaultMonthView extends StatelessWidget {
   final int month;
   final int year;
 
-  _DefaultMonthView({@required this.month, @required this.year});
+  _DefaultMonthView({required this.month, required this.year});
 
   @override
   Widget build(BuildContext context) {
@@ -232,9 +232,9 @@ class _DefaultMonthView extends StatelessWidget {
 
 class _DefaultDayView extends StatelessWidget {
   final DateTime date;
-  final bool isSelected;
+  final bool? isSelected;
 
-  _DefaultDayView({@required this.date, this.isSelected});
+  _DefaultDayView({required this.date, this.isSelected});
 
   @override
   Widget build(BuildContext context) {

@@ -6,14 +6,14 @@ homepage: https://github.com/casvanluijtelaar/paged_vertical_calendar.git
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: '>=2.12.0-259.16.beta <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   paged_vertical_calendar:
     path: ../
-  intl: ^0.16.1
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
