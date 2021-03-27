@@ -19,26 +19,29 @@ class DateUtils {
         weeks.add(week);
         break;
       }
+
       Week week = Week(firstDayOfWeek, lastDayOfWeek);
       weeks.add(week);
 
+      print(lastDayOfWeek);
+
+      if (week.isLastWeekOfMonth) break;
+
       firstDayOfWeek = lastDayOfWeek.nextDay;
       lastDayOfWeek = _lastDayOfWeek(firstDayOfWeek);
-
-      if (weeks.last.isLastWeekOfMonth) break;
     }
+
     return Month(weeks);
   }
 
   static DateTime _lastDayOfWeek(DateTime firstDayOfWeek) {
     int daysInMonth = firstDayOfWeek.daysInMonth;
 
-    if (firstDayOfWeek.day + 6 > daysInMonth) {
-      return DateTime(firstDayOfWeek.year, firstDayOfWeek.month, daysInMonth);
-    } else {
-      return firstDayOfWeek
-          .add(Duration(days: DateTime.sunday - firstDayOfWeek.weekday));
-    }
+    final restOfWeek = (DateTime.daysPerWeek - firstDayOfWeek.weekday);
+
+    return firstDayOfWeek.day + restOfWeek > daysInMonth
+        ? DateTime(firstDayOfWeek.year, firstDayOfWeek.month, daysInMonth)
+        : firstDayOfWeek.add(Duration(days: restOfWeek));
   }
 
   static DateTime _findDayOfWeekInMonth(DateTime date, int dayOfWeek) {
