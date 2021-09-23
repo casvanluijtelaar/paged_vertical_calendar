@@ -97,7 +97,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   }
 
   void paginationStatus(PagingStatus state) {
-    if (state == PagingStatus.completed) return widget.onPaginationCompleted!();
+    if (state == PagingStatus.completed)
+      return widget.onPaginationCompleted?.call();
   }
 
   void fetchItems(int pageKey) async {
