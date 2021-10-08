@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:paged_vertical_calendar/utils/date_models.dart';
 
 class DateUtils {
@@ -30,7 +29,7 @@ class DateUtils {
       // if an endDate is provided we need to check if the current week extends
       // beyond this date. if it does, cap the week to the endDate and stop the
       // loop
-      if (maxDate != null && lastDayOfWeek.isAfter(maxDate)) {
+      if (maxDate != null && lastDayOfWeek.isSameDayOrAfter(maxDate)) {
         Week week = Week(firstDayOfWeek, maxDate);
         weeks.add(week);
         break;
