@@ -14,7 +14,7 @@ class DateUtils {
     List<Week> weeks = [];
 
     while (true) {
-      if (maxDate != null && lastDayOfWeek.isAfter(maxDate)) {
+      if (maxDate != null && lastDayOfWeek.isSameDayOrAfter(maxDate)) {
         Week week = Week(firstDayOfWeek, maxDate);
         weeks.add(week);
         break;
