@@ -109,6 +109,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       return widget.onPaginationCompleted?.call();
   }
 
+  /// fetch a new [Month] object based on the [pageKey] which is the Nth month
+  /// from the start date
   void fetchItems(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
@@ -117,9 +119,9 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
         pageKey,
       );
 
-      if (widget.onMonthLoaded != null)
-        WidgetsBinding.instance!.addPostFrameCallback(
-            (_) => widget.onMonthLoaded!(month.year, month.month));
+      WidgetsBinding.instance?.addPostFrameCallback(
+        (_) => widget.onMonthLoaded?.call(month.year, month.month),
+      );
 
       final newItems = [month];
       final isLastPage = widget.endDate != null &&
@@ -181,44 +183,48 @@ class _MonthView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        monthBuilder != null
-            ? monthBuilder!(context, month.month, month.year)
-            : _DefaultMonthView(month: month.month, year: month.year),
+        /// display the default month header if none is provided
+        monthBuilder?.call(context, month.month, month.year) ??
+            _DefaultMonthView(month: month.month, year: month.year),
+
         Table(
           children: month.weeks.map((Week week) {
-            return _generateFor(context, week);
+            return _generateWeekRow(context, week);
           }).toList(growable: false),
         ),
       ],
     );
   }
 
-  TableRow _generateFor(BuildContext context, Week week) {
+  TableRow _generateWeekRow(BuildContext context, Week week) {
     DateTime firstDay = week.firstDay;
 
     return TableRow(
-      children: List<Widget>.generate(DateTime.daysPerWeek, (int position) {
-        DateTime day = DateTime(
-          week.firstDay.year,
-          week.firstDay.month,
-          firstDay.day + (position - (firstDay.weekday - 1)),
-        );
-
-        if ((position + 1) < week.firstDay.weekday ||
-            (position + 1) > week.lastDay.weekday) {
-          return const SizedBox();
-        } else {
-          return AspectRatio(
-            aspectRatio: 1.0,
-            child: InkWell(
-              onTap: onDayPressed == null ? null : () => onDayPressed!(day),
-              child: dayBuilder != null
-                  ? dayBuilder!(context, day)
-                  : _DefaultDayView(date: day),
-            ),
+      children: List<Widget>.generate(
+        DateTime.daysPerWeek,
+        (int position) {
+          DateTime day = DateTime(
+            week.firstDay.year,
+            week.firstDay.month,
+            firstDay.day + (position - (firstDay.weekday - 1)),
           );
-        }
-      }, growable: false),
+
+          if ((position + 1) < week.firstDay.weekday ||
+              (position + 1) > week.lastDay.weekday) {
+            return const SizedBox();
+          } else {
+            return AspectRatio(
+              aspectRatio: 1.0,
+              child: InkWell(
+                onTap: onDayPressed == null ? null : () => onDayPressed!(day),
+                child: dayBuilder?.call(context, day) ??
+                    _DefaultDayView(date: day),
+              ),
+            );
+          }
+        },
+        growable: false,
+      ),
     );
   }
 }
