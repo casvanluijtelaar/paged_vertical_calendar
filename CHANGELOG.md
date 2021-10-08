@@ -1,3 +1,7 @@
+## [1.0.4] - 08/10/2021
+
+* exposed scrollController
+
 ## [1.0.3] - 08/10/2021
 
 * added ability to set custom scrollPhysics [#8](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/8)

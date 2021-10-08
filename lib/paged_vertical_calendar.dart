@@ -34,6 +34,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.onPaginationCompleted,
     this.invisibleMonthsThreshold = 1,
     this.physics,
+    this.scrollController,
     this.listPadding = EdgeInsets.zero,
   });
 
@@ -81,6 +82,9 @@ class PagedVerticalCalendar extends StatefulWidget {
 
   /// scroll physics, defaults to matching platform conventions
   final ScrollPhysics? physics;
+
+  /// scroll controller for making programmable scroll interactions
+  final ScrollController? scrollController;
 
   @override
   _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
@@ -138,6 +142,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
         padding: widget.listPadding,
         pagingController: controller,
         physics: widget.physics,
+        scrollController: widget.scrollController,
         builderDelegate: PagedChildBuilderDelegate<Month>(
           itemBuilder: (BuildContext context, Month month, int index) {
             return _MonthView(
