@@ -23,8 +23,6 @@ class DateUtils {
       Week week = Week(firstDayOfWeek, lastDayOfWeek);
       weeks.add(week);
 
-      print(lastDayOfWeek);
-
       if (week.isLastWeekOfMonth) break;
 
       firstDayOfWeek = lastDayOfWeek.nextDay;
