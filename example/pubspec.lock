@@ -66,7 +66,7 @@ packages:
       name: infinite_scroll_pagination
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0"
+    version: "3.1.0"
   intl:
     dependency: "direct main"
     description:
@@ -94,7 +94,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.2"
+    version: "1.0.3"
   path:
     dependency: transitive
     description:
@@ -113,7 +113,7 @@ packages:
       name: sliver_tools
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0-nullsafety"
+    version: "0.2.5"
   source_span:
     dependency: transitive
     description:

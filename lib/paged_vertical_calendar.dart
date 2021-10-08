@@ -257,28 +257,3 @@ typedef MonthBuilder = Widget Function(
 typedef DayBuilder = Widget Function(BuildContext context, DateTime date);
 
 typedef OnMonthLoaded = void Function(int year, int month);
-
-/*
-Month{
-  month: 3, 
-  year: 2021, 
-  daysInMonth: 31, 
-  weeks: [
-    Week{firstDay: 2021-03-27 00:00:00.000, lastDay: 2021-03-31 00:00:00.000}
-  ]
-}
-
-
-Month{
-  month: 4, 
-  year: 2021, 
-  daysInMonth: 30, 
-  weeks: [
-    Week{firstDay: 2021-04-01 00:00:00.000, lastDay: 2021-04-04 00:00:00.000}, 
-    Week{firstDay: 2021-04-05 00:00:00.000, lastDay: 2021-04-11 00:00:00.000}, 
-    Week{firstDay: 2021-04-12 00:00:00.000, lastDay: 2021-04-18 00:00:00.000}, 
-    Week{firstDay: 2021-04-19 00:00:00.000, lastDay: 2021-04-25 00:00:00.000}, 
-    Week{firstDay: 2021-04-26 00:00:00.000, lastDay: 2021-04-30 00:00:00.000}
-  ]
-}
-*/
