@@ -1,7 +1,5 @@
 name: paged_vertical_calendar_example
 description: A simple example showing several ways this package can be used to implement calendar related interfaces.
-authors:
-  - "casvanluijtelaar"
 homepage: https://github.com/casvanluijtelaar/paged_vertical_calendar.git
 publish_to: 'none'
 
