@@ -1,17 +1,16 @@
 name: paged_vertical_calendar
 description: A simple paginated framework for implementing calendar based interfaces.
-homepage: https://github.com/casvanluijtelaar/paged_vertical_calendar.git
-repository: https://github.com/casvanluijtelaar/paged_vertical_calendar.git
-version: 1.0.1
+homepage: https://github.com/casvanluijtelaar/paged_vertical_calendar
+repository: https://github.com/casvanluijtelaar/paged_vertical_calendar
+version: 1.0.3
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
-  flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  infinite_scroll_pagination: ^3.0.0
+  infinite_scroll_pagination: ^3.1.0
   intl: ^0.17.0
 
 dev_dependencies:

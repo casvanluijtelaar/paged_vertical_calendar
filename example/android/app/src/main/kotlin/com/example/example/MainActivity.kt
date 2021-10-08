@@ -1,4 +1,4 @@
-package fr.g123k.vertical_calendar_example
+package com.example.example
 
 import io.flutter.embedding.android.FlutterActivity
 
