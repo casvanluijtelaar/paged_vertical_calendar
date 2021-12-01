@@ -1,3 +1,7 @@
+## 1.0.5
+
+* typo (woops!)
+
 ## 1.0.4
 
 * exposed scrollController

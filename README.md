@@ -22,7 +22,7 @@
 
 ```dart
 Scaffold(
-  home: PagedVerticalCalendar(),
+  body: PagedVerticalCalendar(),
 );
 ```
 ## :loudspeaker: Callbacks
