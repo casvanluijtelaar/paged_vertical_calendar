@@ -2,14 +2,18 @@ import 'package:paged_vertical_calendar/utils/date_models.dart';
 
 class DateUtils {
   /// generates a [Month] object from the Nth index from the startdate
-  static Month getMonth(DateTime? minDate, DateTime? maxDate, int monthPage) {
+  static Month getMonth(DateTime? minDate, DateTime? maxDate, int monthPage, bool up) {
     // if no start date is provided use the current date
     DateTime startDate = (minDate ?? DateTime.now()).removeTime();
 
     // if this is not the first month in this calendar then calculate a new
     // start date for this month
     if (monthPage > 0) {
-      startDate = DateTime(startDate.year, startDate.month + monthPage, 1);
+      if (up) {
+        startDate = DateTime(startDate.year, startDate.month - monthPage, 1);
+      } else {
+        startDate = DateTime(startDate.year, startDate.month + monthPage, 1);
+      }
     }
 
     // find the first day of the first week in this month
