@@ -110,6 +110,16 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   @override
   void initState() {
     super.initState();
+
+    int years = DateTime.now().year - widget.startDate!.year;
+    int months = DateTime.now().month - widget.endDate!.month;
+    int days = DateTime.now().day - widget.startDate!.day;
+
+    if (years > 0) {
+      months += (years * 12);
+    }
+    initialIndex = months;
+
     _pagingReplyUpController = PagingController<int, Month>(
       firstPageKey: 0,
       invisibleItemsThreshold: widget.invisibleMonthsThreshold,
@@ -123,15 +133,6 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     );
     _pagingReplyDownController.addPageRequestListener(_fetchDownPage);
     _pagingReplyDownController.addStatusListener(paginationStatusDown);
-
-    int years = DateTime.now().year - widget.startDate!.year;
-    int months = DateTime.now().month - widget.endDate!.month;
-    int days = DateTime.now().day - widget.startDate!.day;
-
-    if (years > 0) {
-      months += (years * 12);
-    }
-    initialIndex = months;
   }
 
   void paginationStatusUp(PagingStatus state) {
