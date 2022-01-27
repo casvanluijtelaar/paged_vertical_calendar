@@ -2,7 +2,8 @@ import 'package:paged_vertical_calendar/utils/date_models.dart';
 
 class DateUtils {
   /// generates a [Month] object from the Nth index from the startdate
-  static Month getMonth(DateTime? minDate, DateTime? maxDate, int monthPage, bool up) {
+  static Month getMonth(
+      DateTime? minDate, DateTime? maxDate, int monthPage, bool up) {
     // if no start date is provided use the current date
     DateTime startDate = (minDate ?? DateTime.now()).removeTime();
 
