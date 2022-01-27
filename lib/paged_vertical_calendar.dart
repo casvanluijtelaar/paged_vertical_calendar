@@ -38,7 +38,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.scrollController,
     this.listPadding = EdgeInsets.zero,
     this.languageCode,
-    this.initialIndex,
+    this.initDate,
   });
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
@@ -88,12 +88,12 @@ class PagedVerticalCalendar extends StatefulWidget {
 
   /// scroll controller for making programmable scroll interactions
   final ScrollController? scrollController;
-  
+
   /// Language Code String
   final String? languageCode;
 
-  /// init with this index
-  final int? initialIndex;
+  /// init with this Date
+  final DateTime? initDate;
 
   @override
   _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
@@ -104,6 +104,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   late PagingController<int, Month> _pagingReplyDownController;
 
   final Key downListKey = UniqueKey();
+
+  late int initialIndex;
 
   @override
   void initState() {
@@ -121,6 +123,15 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     );
     _pagingReplyDownController.addPageRequestListener(_fetchDownPage);
     _pagingReplyDownController.addStatusListener(paginationStatusDown);
+
+    int years = DateTime.now().year - widget.startDate!.year;
+    int months = DateTime.now().month - widget.endDate!.month;
+    int days = DateTime.now().day - widget.startDate!.day;
+
+    if (years > 0) {
+      months += (years * 12);
+    }
+    initialIndex = months;
   }
 
   void paginationStatusUp(PagingStatus state) {
@@ -141,10 +152,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     print("fetch up: " + pageKey.toString());
     try {
       final month = DateUtils.getMonth(
-          DateTime(
-              widget.startDate!.year,
-              widget.startDate!.month + widget.initialIndex!,
-              widget.startDate!.day),
+          DateTime(widget.startDate!.year,
+              widget.startDate!.month + initialIndex!, widget.startDate!.day),
           widget.endDate,
           pageKey + 1,
           true);
@@ -174,7 +183,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       final month = DateUtils.getMonth(
         widget.startDate,
         widget.endDate,
-        pageKey + widget.initialIndex!,
+        pageKey + initialIndex!,
         false,
       );
 
@@ -361,7 +370,8 @@ class _DefaultMonthView extends StatelessWidget {
   final int year;
   final String? languageCode;
 
-  _DefaultMonthView({required this.month, required this.year, this.languageCode});
+  _DefaultMonthView(
+      {required this.month, required this.year, this.languageCode});
 
   @override
   Widget build(BuildContext context) {
