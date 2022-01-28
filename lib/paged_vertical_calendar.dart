@@ -94,9 +94,10 @@ class PagedVerticalCalendar extends StatefulWidget {
   /// Language Code String
   final String? languageCode;
 
-  /// init with this Date. Its necessary to have startDate
+  /// init with this Date. If no startDate is given, it takes DateTime.now().
   final DateTime? initDate;
 
+  /// defaults to true. Show weekDays or not
   final bool weekDays;
 
   @override
@@ -122,7 +123,6 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     if (widget.initDate != null) {
       if (widget.endDate != null) {
         int diffDays = widget.endDate!.difference(widget.initDate!).inDays;
-        //print("diffDays: " + diffDays.toString());
         if (diffDays.isNegative) {
           initialDate = widget.endDate!;
         } else {
@@ -148,7 +148,6 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       months += (years * 12);
     }
     initialIndex = months;
-    print(years);
 
     _pagingReplyUpController = PagingController<int, Month>(
       firstPageKey: 0,
@@ -166,13 +165,11 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   }
 
   void paginationStatusUp(PagingStatus state) {
-    //print(PagingStatus);
     if (state == PagingStatus.completed)
       return widget.onPaginationCompleted?.call();
   }
 
   void paginationStatusDown(PagingStatus state) {
-    //print(PagingStatus);
     if (state == PagingStatus.completed)
       return widget.onPaginationCompleted?.call();
   }
@@ -180,8 +177,6 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   /// fetch a new [Month] object based on the [pageKey] which is the Nth month
   /// from the start date
   void _fetchUpPage(int pageKey) async {
-    // print("fetch up: " + pageKey.toString());
-
     DateTime startDateUp = widget.startDate != null
         ? DateTime(widget.startDate!.year,
             widget.startDate!.month + initialIndex, widget.startDate!.day)
@@ -211,7 +206,6 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   }
 
   void _fetchDownPage(int pageKey) async {
-    // print("fetch down: " + pageKey.toString());
     try {
       final month = DateUtils.getMonth(
         widget.startDate,
