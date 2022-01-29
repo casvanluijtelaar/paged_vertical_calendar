@@ -38,9 +38,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.physics,
     this.scrollController,
     this.listPadding = EdgeInsets.zero,
-    this.languageCode = 'en',
-    this.initDate,
-    this.weekDays = true,
+    this.initialDate,
   });
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
@@ -91,14 +89,9 @@ class PagedVerticalCalendar extends StatefulWidget {
   /// scroll controller for making programmable scroll interactions
   final ScrollController? scrollController;
 
-  /// Language Code String
-  final String? languageCode;
-
-  /// init with this Date. If no startDate is given, it takes DateTime.now().
-  final DateTime? initDate;
-
-  /// defaults to true. Show weekDays or not
-  final bool weekDays;
+  /// with this date the calendar is initialized and the month of the date is displayed first.
+  /// If no initialDate is provided, today's date is taken.
+  final DateTime? initialDate;
 
   @override
   _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
@@ -110,44 +103,40 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
   final Key downListKey = UniqueKey();
 
-  late int initialIndex;
-  late DateTime initialDate;
-  late DateTime startingDate;
+  late DateTime initDate;
+  late bool hideUp;
 
   @override
   void initState() {
     super.initState();
 
-    initializeDateFormatting();
-
-    if (widget.initDate != null) {
+    if (widget.initialDate != null) {
       if (widget.endDate != null) {
-        int diffDays = widget.endDate!.difference(widget.initDate!).inDays;
-        if (diffDays.isNegative) {
-          initialDate = widget.endDate!;
+        int diffDaysEndDate =
+            widget.endDate!.difference(widget.initialDate!).inDays;
+        if (diffDaysEndDate.isNegative) {
+          initDate = widget.endDate!;
         } else {
-          initialDate = widget.initDate!;
+          initDate = widget.initialDate!;
         }
       } else {
-        initialDate = widget.initDate!;
+        initDate = widget.initialDate!;
       }
     } else {
-      initialDate = DateTime.now().removeTime();
+      initDate = DateTime.now().removeTime();
     }
 
     if (widget.startDate != null) {
-      startingDate = widget.startDate!;
+      int diffDaysStartDate = widget.startDate!.difference(initDate).inDays;
+      print(diffDaysStartDate);
+      if (diffDaysStartDate.isNegative) {
+        hideUp = true;
+      } else {
+        hideUp = false;
+      }
     } else {
-      startingDate = DateTime.now().removeTime();
+      hideUp = true;
     }
-
-    int years = initialDate.year - startingDate.year;
-    int months = initialDate.month - startingDate.month;
-
-    if (years > 0) {
-      months += (years * 12);
-    }
-    initialIndex = months;
 
     _pagingReplyUpController = PagingController<int, Month>(
       firstPageKey: 0,
@@ -177,14 +166,22 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   /// fetch a new [Month] object based on the [pageKey] which is the Nth month
   /// from the start date
   void _fetchUpPage(int pageKey) async {
-    DateTime startDateUp = widget.startDate != null
-        ? DateTime(widget.startDate!.year,
-            widget.startDate!.month + initialIndex, widget.startDate!.day)
-        : DateTime.now();
+    // DateTime startDateUp = widget.startDate != null
+    //     ? DateTime(widget.startDate!.year,
+    //         widget.startDate!.month + initialIndex, widget.startDate!.day)
+    //     : DateTime.now();
+
+    // DateTime initDateUp =
+    //     Jiffy(DateTime(initialDate.year, initialDate.month, 1))
+    //         .subtract(months: 1)
+    //         .dateTime;
 
     try {
-      final month =
-          DateUtils.getMonth(startDateUp, widget.endDate, pageKey + 1, true);
+      final month = DateUtils.getMonth(
+          DateTime(initDate.year, initDate.month - 1, 1),
+          widget.startDate,
+          pageKey,
+          true);
 
       WidgetsBinding.instance?.addPostFrameCallback(
         (_) => widget.onMonthLoaded?.call(month.year, month.month),
@@ -208,9 +205,9 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   void _fetchDownPage(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
-        widget.startDate,
+        DateTime(initDate.year, initDate.month, 1),
         widget.endDate,
-        pageKey + initialIndex,
+        pageKey,
         false,
       );
 
@@ -241,21 +238,20 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
           offset: position,
           center: downListKey,
           slivers: [
-            PagedSliverList(
-              pagingController: _pagingReplyUpController,
-              builderDelegate: PagedChildBuilderDelegate<Month>(
-                itemBuilder: (BuildContext context, Month month, int index) {
-                  return _MonthView(
-                    month: month,
-                    monthBuilder: widget.monthBuilder,
-                    dayBuilder: widget.dayBuilder,
-                    onDayPressed: widget.onDayPressed,
-                    languageCode: widget.languageCode!,
-                    weekDays: widget.weekDays,
-                  );
-                },
+            if (hideUp)
+              PagedSliverList(
+                pagingController: _pagingReplyUpController,
+                builderDelegate: PagedChildBuilderDelegate<Month>(
+                  itemBuilder: (BuildContext context, Month month, int index) {
+                    return _MonthView(
+                      month: month,
+                      monthBuilder: widget.monthBuilder,
+                      dayBuilder: widget.dayBuilder,
+                      onDayPressed: widget.onDayPressed,
+                    );
+                  },
+                ),
               ),
-            ),
             PagedSliverList(
               key: downListKey,
               pagingController: _pagingReplyDownController,
@@ -266,8 +262,6 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                     monthBuilder: widget.monthBuilder,
                     dayBuilder: widget.dayBuilder,
                     onDayPressed: widget.onDayPressed,
-                    languageCode: widget.languageCode,
-                    weekDays: widget.weekDays,
                   );
                 },
               ),
@@ -284,34 +278,6 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     _pagingReplyDownController.dispose();
     super.dispose();
   }
-}
-
-List<String> getDaysOfWeek([String locale = 'en']) {
-  var today = DateTime.now();
-
-  while (today.weekday != DateTime.monday) {
-    today = today.subtract(const Duration(days: 1));
-  }
-  final dateFormat = DateFormat(DateFormat.ABBR_WEEKDAY, locale);
-  final daysOfWeek = [
-    dateFormat.format(today),
-    dateFormat.format(today.add(const Duration(days: 1))),
-    dateFormat.format(today.add(const Duration(days: 2))),
-    dateFormat.format(today.add(const Duration(days: 3))),
-    dateFormat.format(today.add(const Duration(days: 4))),
-    dateFormat.format(today.add(const Duration(days: 5))),
-    dateFormat.format(today.add(const Duration(days: 6)))
-  ];
-
-  return daysOfWeek;
-}
-
-Widget _pattern(BuildContext context, String weekday) {
-  return Center(
-    child: Text(
-      weekday.toUpperCase(),
-    ),
-  );
 }
 
 class _MonthView extends StatelessWidget {
@@ -340,18 +306,7 @@ class _MonthView extends StatelessWidget {
             _DefaultMonthView(
               month: month.month,
               year: month.year,
-              languageCode: languageCode!,
             ),
-        if (weekDays)
-          GridView.count(
-              crossAxisCount: DateTime.daysPerWeek,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
-              children: List.generate(DateTime.daysPerWeek, (index) {
-                final weekDay = getDaysOfWeek(languageCode!)[index];
-                return _pattern(context, weekDay);
-              })),
         Table(
           children: month.weeks.map((Week week) {
             return _generateWeekRow(context, week);
@@ -400,17 +355,15 @@ class _MonthView extends StatelessWidget {
 class _DefaultMonthView extends StatelessWidget {
   final int month;
   final int year;
-  final String? languageCode;
 
-  _DefaultMonthView(
-      {required this.month, required this.year, this.languageCode});
+  _DefaultMonthView({required this.month, required this.year});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text(
-        DateFormat.yMMMM(languageCode).format(DateTime(year, month)),
+        DateFormat('MMMM yyyy').format(DateTime(year, month)),
         style: Theme.of(context).textTheme.headline6,
       ),
     );
