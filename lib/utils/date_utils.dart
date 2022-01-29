@@ -11,8 +11,10 @@ class DateUtils {
     // start date for this month
     if (monthPage > 0) {
       if (up) {
+        // fetsch up: month will be subtructed
         startDate = DateTime(startDate.year, startDate.month - monthPage, 1);
       } else {
+        // fetch down: month will be added
         startDate = DateTime(startDate.year, startDate.month + monthPage, 1);
       }
     }
@@ -34,16 +36,35 @@ class DateUtils {
       // if an endDate is provided we need to check if the current week extends
       // beyond this date. if it does, cap the week to the endDate and stop the
       // loop
-      if (maxDate != null && lastDayOfWeek.isSameDayOrAfter(maxDate)) {
-        Week week = Week(firstDayOfWeek, maxDate);
+
+      if (up) {
+        // fetching up
+        Week week;
+        if (maxDate != null && firstDayOfWeek.isBefore(maxDate)) {
+          week = Week(maxDate, lastDayOfWeek);
+        } else {
+          week = Week(firstDayOfWeek, lastDayOfWeek);
+        }
+
+        if (maxDate != null && lastDayOfWeek.isSameDayOrAfter(maxDate)) {
+          weeks.add(week);
+        } else if (maxDate == null) {
+          weeks.add(week);
+        }
+        if (week.isLastWeekOfMonth) break;
+      } else {
+        // fetching down
+        if (maxDate != null && lastDayOfWeek.isSameDayOrAfter(maxDate)) {
+          Week week = Week(firstDayOfWeek, maxDate);
+          weeks.add(week);
+          break;
+        }
+
+        Week week = Week(firstDayOfWeek, lastDayOfWeek);
         weeks.add(week);
-        break;
+
+        if (week.isLastWeekOfMonth) break;
       }
-
-      Week week = Week(firstDayOfWeek, lastDayOfWeek);
-      weeks.add(week);
-
-      if (week.isLastWeekOfMonth) break;
 
       firstDayOfWeek = lastDayOfWeek.nextDay;
       lastDayOfWeek = _lastDayOfWeek(firstDayOfWeek);
