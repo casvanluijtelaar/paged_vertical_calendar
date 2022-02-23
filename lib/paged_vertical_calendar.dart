@@ -285,16 +285,12 @@ class _MonthView extends StatelessWidget {
     this.monthBuilder,
     this.dayBuilder,
     this.onDayPressed,
-    this.languageCode,
-    this.weekDays = true,
   });
 
   final Month month;
   final MonthBuilder? monthBuilder;
   final DayBuilder? dayBuilder;
   final ValueChanged<DateTime>? onDayPressed;
-  final String? languageCode;
-  final bool weekDays;
 
   @override
   Widget build(BuildContext context) {
@@ -371,9 +367,8 @@ class _DefaultMonthView extends StatelessWidget {
 
 class _DefaultDayView extends StatelessWidget {
   final DateTime date;
-  final bool? isSelected;
 
-  _DefaultDayView({required this.date, this.isSelected});
+  _DefaultDayView({required this.date});
 
   @override
   Widget build(BuildContext context) {
