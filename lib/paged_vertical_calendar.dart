@@ -88,7 +88,7 @@ class PagedVerticalCalendar extends StatefulWidget {
   /// scroll controller for making programmable scroll interactions
   final ScrollController? scrollController;
 
-  /// the initial date displayed by the calendar. 
+  /// the initial date displayed by the calendar.
   /// if inititial date is nulll, the start date will be used
   final DateTime? initialDate;
 
