@@ -88,8 +88,8 @@ class PagedVerticalCalendar extends StatefulWidget {
   /// scroll controller for making programmable scroll interactions
   final ScrollController? scrollController;
 
-  /// with this date the calendar is initialized and the month of the date is displayed first.
-  /// If no initialDate is provided, today's date is taken.
+  /// the initial date displayed by the calendar. 
+  /// if inititial date is nulll, the start date will be used
   final DateTime? initialDate;
 
   @override
@@ -127,7 +127,6 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
     if (widget.startDate != null) {
       int diffDaysStartDate = widget.startDate!.difference(initDate).inDays;
-      print(diffDaysStartDate);
       if (diffDaysStartDate.isNegative) {
         hideUp = true;
       } else {

@@ -24,7 +24,7 @@ void main() {
 
     test('get a month with provided end date', () {
       final month = DateUtils.getMonth(
-          DateTime(2020, 1, 1), DateTime(2020, 5, 1), 4, true);
+          DateTime(2020, 1, 1), DateTime(2020, 5, 1), 4, false);
       expect(month, isNotNull);
       expect(month.month, 5);
       expect(month.daysInMonth,

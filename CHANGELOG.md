@@ -1,3 +1,6 @@
+## 1.0.6
+* allow for bi-directional pagination. thanks to [desmeit](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/13)
+* adds initiaDate parameter that sets the starting location of the calendar view.
 ## 1.0.5
 
 * typo (woops!)
