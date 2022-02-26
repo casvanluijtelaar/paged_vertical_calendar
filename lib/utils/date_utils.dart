@@ -2,14 +2,21 @@ import 'package:paged_vertical_calendar/utils/date_models.dart';
 
 class DateUtils {
   /// generates a [Month] object from the Nth index from the startdate
-  static Month getMonth(DateTime? minDate, DateTime? maxDate, int monthPage) {
+  static Month getMonth(
+      DateTime? minDate, DateTime? maxDate, int monthPage, bool up) {
     // if no start date is provided use the current date
     DateTime startDate = (minDate ?? DateTime.now()).removeTime();
 
     // if this is not the first month in this calendar then calculate a new
     // start date for this month
     if (monthPage > 0) {
-      startDate = DateTime(startDate.year, startDate.month + monthPage, 1);
+      if (up) {
+        // fetsch up: month will be subtructed
+        startDate = DateTime(startDate.year, startDate.month - monthPage, 1);
+      } else {
+        // fetch down: month will be added
+        startDate = DateTime(startDate.year, startDate.month + monthPage, 1);
+      }
     }
 
     // find the first day of the first week in this month
@@ -29,16 +36,35 @@ class DateUtils {
       // if an endDate is provided we need to check if the current week extends
       // beyond this date. if it does, cap the week to the endDate and stop the
       // loop
-      if (maxDate != null && lastDayOfWeek.isSameDayOrAfter(maxDate)) {
-        Week week = Week(firstDayOfWeek, maxDate);
+
+      if (up) {
+        // fetching up
+        Week week;
+        if (maxDate != null && firstDayOfWeek.isBefore(maxDate)) {
+          week = Week(maxDate, lastDayOfWeek);
+        } else {
+          week = Week(firstDayOfWeek, lastDayOfWeek);
+        }
+
+        if (maxDate != null && lastDayOfWeek.isSameDayOrAfter(maxDate)) {
+          weeks.add(week);
+        } else if (maxDate == null) {
+          weeks.add(week);
+        }
+        if (week.isLastWeekOfMonth) break;
+      } else {
+        // fetching down
+        if (maxDate != null && lastDayOfWeek.isSameDayOrAfter(maxDate)) {
+          Week week = Week(firstDayOfWeek, maxDate);
+          weeks.add(week);
+          break;
+        }
+
+        Week week = Week(firstDayOfWeek, lastDayOfWeek);
         weeks.add(week);
-        break;
+
+        if (week.isLastWeekOfMonth) break;
       }
-
-      Week week = Week(firstDayOfWeek, lastDayOfWeek);
-      weeks.add(week);
-
-      if (week.isLastWeekOfMonth) break;
 
       firstDayOfWeek = lastDayOfWeek.nextDay;
       lastDayOfWeek = _lastDayOfWeek(firstDayOfWeek);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide DateUtils;
+import 'package:flutter/rendering.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:paged_vertical_calendar/utils/date_models.dart';
@@ -36,6 +37,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.physics,
     this.scrollController,
     this.listPadding = EdgeInsets.zero,
+    this.initialDate,
   });
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
@@ -86,37 +88,126 @@ class PagedVerticalCalendar extends StatefulWidget {
   /// scroll controller for making programmable scroll interactions
   final ScrollController? scrollController;
 
+  /// with this date the calendar is initialized and the month of the date is displayed first.
+  /// If no initialDate is provided, today's date is taken.
+  final DateTime? initialDate;
+
   @override
   _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
 }
 
 class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
-  late PagingController<int, Month> controller;
+  late PagingController<int, Month> _pagingReplyUpController;
+  late PagingController<int, Month> _pagingReplyDownController;
+
+  final Key downListKey = UniqueKey();
+
+  late DateTime initDate;
+  late bool hideUp;
 
   @override
   void initState() {
     super.initState();
-    controller = PagingController<int, Month>(
+
+    if (widget.initialDate != null) {
+      if (widget.endDate != null) {
+        int diffDaysEndDate =
+            widget.endDate!.difference(widget.initialDate!).inDays;
+        if (diffDaysEndDate.isNegative) {
+          initDate = widget.endDate!;
+        } else {
+          initDate = widget.initialDate!;
+        }
+      } else {
+        initDate = widget.initialDate!;
+      }
+    } else {
+      initDate = DateTime.now().removeTime();
+    }
+
+    if (widget.startDate != null) {
+      int diffDaysStartDate = widget.startDate!.difference(initDate).inDays;
+      print(diffDaysStartDate);
+      if (diffDaysStartDate.isNegative) {
+        hideUp = true;
+      } else {
+        hideUp = false;
+      }
+    } else {
+      hideUp = true;
+    }
+
+    _pagingReplyUpController = PagingController<int, Month>(
       firstPageKey: 0,
       invisibleItemsThreshold: widget.invisibleMonthsThreshold,
     );
-    controller.addPageRequestListener(fetchItems);
-    controller.addStatusListener(paginationStatus);
+    _pagingReplyUpController.addPageRequestListener(_fetchUpPage);
+    _pagingReplyUpController.addStatusListener(paginationStatusUp);
+
+    _pagingReplyDownController = PagingController<int, Month>(
+      firstPageKey: 0,
+      invisibleItemsThreshold: widget.invisibleMonthsThreshold,
+    );
+    _pagingReplyDownController.addPageRequestListener(_fetchDownPage);
+    _pagingReplyDownController.addStatusListener(paginationStatusDown);
   }
 
-  void paginationStatus(PagingStatus state) {
+  void paginationStatusUp(PagingStatus state) {
+    if (state == PagingStatus.completed)
+      return widget.onPaginationCompleted?.call();
+  }
+
+  void paginationStatusDown(PagingStatus state) {
     if (state == PagingStatus.completed)
       return widget.onPaginationCompleted?.call();
   }
 
   /// fetch a new [Month] object based on the [pageKey] which is the Nth month
   /// from the start date
-  void fetchItems(int pageKey) async {
+  void _fetchUpPage(int pageKey) async {
+    // DateTime startDateUp = widget.startDate != null
+    //     ? DateTime(widget.startDate!.year,
+    //         widget.startDate!.month + initialIndex, widget.startDate!.day)
+    //     : DateTime.now();
+
+    // DateTime initDateUp =
+    //     Jiffy(DateTime(initialDate.year, initialDate.month, 1))
+    //         .subtract(months: 1)
+    //         .dateTime;
+
     try {
       final month = DateUtils.getMonth(
-        widget.startDate,
+          DateTime(initDate.year, initDate.month - 1, 1),
+          widget.startDate,
+          pageKey,
+          true);
+
+      WidgetsBinding.instance?.addPostFrameCallback(
+        (_) => widget.onMonthLoaded?.call(month.year, month.month),
+      );
+
+      final newItems = [month];
+      final isLastPage = widget.startDate != null &&
+          widget.startDate!.isSameDayOrAfter(month.weeks.first.firstDay);
+
+      if (isLastPage) {
+        return _pagingReplyUpController.appendLastPage(newItems);
+      }
+
+      final nextPageKey = pageKey + newItems.length;
+      _pagingReplyUpController.appendPage(newItems, nextPageKey);
+    } catch (_) {
+      _pagingReplyUpController.error;
+    }
+  }
+
+  void _fetchDownPage(int pageKey) async {
+    try {
+      final month = DateUtils.getMonth(
+        DateTime(initDate.year, initDate.month, 1),
         widget.endDate,
         pageKey,
+        false,
       );
 
       WidgetsBinding.instance?.addPostFrameCallback(
@@ -127,41 +218,63 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       final isLastPage = widget.endDate != null &&
           widget.endDate!.isSameDayOrBefore(month.weeks.last.lastDay);
 
-      if (isLastPage) return controller.appendLastPage(newItems);
+      if (isLastPage) {
+        return _pagingReplyDownController.appendLastPage(newItems);
+      }
 
       final nextPageKey = pageKey + newItems.length;
-      controller.appendPage(newItems, nextPageKey);
+      _pagingReplyDownController.appendPage(newItems, nextPageKey);
     } catch (_) {
-      controller.error;
+      _pagingReplyDownController.error;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: PagedListView<int, Month>(
-        addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-        padding: widget.listPadding,
-        pagingController: controller,
-        physics: widget.physics,
-        scrollController: widget.scrollController,
-        builderDelegate: PagedChildBuilderDelegate<Month>(
-          itemBuilder: (BuildContext context, Month month, int index) {
-            return _MonthView(
-              month: month,
-              monthBuilder: widget.monthBuilder,
-              dayBuilder: widget.dayBuilder,
-              onDayPressed: widget.onDayPressed,
-            );
-          },
-        ),
-      ),
+    return Scrollable(
+      viewportBuilder: (BuildContext context, ViewportOffset position) {
+        return Viewport(
+          offset: position,
+          center: downListKey,
+          slivers: [
+            if (hideUp)
+              PagedSliverList(
+                pagingController: _pagingReplyUpController,
+                builderDelegate: PagedChildBuilderDelegate<Month>(
+                  itemBuilder: (BuildContext context, Month month, int index) {
+                    return _MonthView(
+                      month: month,
+                      monthBuilder: widget.monthBuilder,
+                      dayBuilder: widget.dayBuilder,
+                      onDayPressed: widget.onDayPressed,
+                    );
+                  },
+                ),
+              ),
+            PagedSliverList(
+              key: downListKey,
+              pagingController: _pagingReplyDownController,
+              builderDelegate: PagedChildBuilderDelegate<Month>(
+                itemBuilder: (BuildContext context, Month month, int index) {
+                  return _MonthView(
+                    month: month,
+                    monthBuilder: widget.monthBuilder,
+                    dayBuilder: widget.dayBuilder,
+                    onDayPressed: widget.onDayPressed,
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _pagingReplyUpController.dispose();
+    _pagingReplyDownController.dispose();
     super.dispose();
   }
 }
@@ -185,12 +298,17 @@ class _MonthView extends StatelessWidget {
       children: <Widget>[
         /// display the default month header if none is provided
         monthBuilder?.call(context, month.month, month.year) ??
-            _DefaultMonthView(month: month.month, year: month.year),
-
+            _DefaultMonthView(
+              month: month.month,
+              year: month.year,
+            ),
         Table(
           children: month.weeks.map((Week week) {
             return _generateWeekRow(context, week);
           }).toList(growable: false),
+        ),
+        SizedBox(
+          height: 20,
         ),
       ],
     );
@@ -249,9 +367,8 @@ class _DefaultMonthView extends StatelessWidget {
 
 class _DefaultDayView extends StatelessWidget {
   final DateTime date;
-  final bool? isSelected;
 
-  _DefaultDayView({required this.date, this.isSelected});
+  _DefaultDayView({required this.date});
 
   @override
   Widget build(BuildContext context) {
