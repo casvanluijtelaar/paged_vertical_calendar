@@ -1,3 +1,8 @@
+## 1.1.0
+* update to Flutter 3.0!!!
+* **BREAKING**: in order to better reflect the bi-directional pagination, `startDate` & `endDate`have been renamed to `minDate` & `maxDate`
+* **BREAKING**: `onPaginationComplete` will now return a `PaginationDirection` to indicate if `minDate` or `maxDate` has been reached
+
 ## 1.0.6
 * allow for bi-directional pagination. thanks to [desmeit](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/13)
 * adds initiaDate parameter that sets the starting location of the calendar view.

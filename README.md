@@ -25,12 +25,15 @@ Scaffold(
   body: PagedVerticalCalendar(),
 );
 ```
-## :loudspeaker: Callbacks
+## :loudspeaker: functionality
 
 Several callback are provided to facilitate easy implementation of any calendar interactions
 
 ```dart
 PagedVerticalCalendar(
+  minDate: DateTime.now().subtract(Duration(days 365)),
+  maxDate: DateTime.now().add(Duration(days 365)),
+  initialDate: DateTime.now().add(Duration(days 3)),
   invisibleMonthsThreshold: 1,
   onMonthLoaded: (year, month) {
     // on month widget load 
@@ -38,7 +41,7 @@ PagedVerticalCalendar(
   onDayPressed: (value) {
     // on day widget pressed   
   },
-  onPaginationCompleted: () {
+  onPaginationCompleted: (direction) {
     // on pagination completion
   },
 );
@@ -49,7 +52,13 @@ PagedVerticalCalendar(
 
 `onDayPressed` is a simple `onPressed` callback but also provides the `DateTime` of the day that has been pressed.
 
-finally when an `endDate` is provided to the `PagedVerticalCalendar`, the `onPaginationCompleted` callback can be used. This is a `VoidCallBack` that indicates when all the months have been loaded.
+If a `minDate` is provided the calendar will stop scrolling up at that date. make sure `minDate` < `maxDate`. 
+
+If a `maxDate` is provided the calendar will stop scrolling down at that date. make sure `maxDate` > `minDate`. 
+
+If an `initialDate` is provided the calendar start by displaying this date (otherwise `DateTime.now()`). make sure `minDate` < `initialData` < `maxDate`. 
+
+Finally when a `minDate` or `maxDate` is provided to the `PagedVerticalCalendar`, the `onPaginationCompleted` callback can be used. it will return a `PaginationDirection` to indicate what side of the calendar has been reached.
 
 
 

@@ -5,6 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:paged_vertical_calendar/utils/date_models.dart';
 import 'package:paged_vertical_calendar/utils/date_utils.dart';
 
+
+/// enum indicating the pagination enpoint direction
+enum PaginationDirection {
+  up,
+  down,
+}
+
 /// a minimalistic paginated calendar widget providing infinite customisation
 /// options and usefull paginated callbacks. all paremeters are optional.
 ///
@@ -25,8 +32,9 @@ import 'package:paged_vertical_calendar/utils/date_utils.dart';
 /// ```
 class PagedVerticalCalendar extends StatefulWidget {
   PagedVerticalCalendar({
-    this.startDate,
-    this.endDate,
+    this.minDate,
+    this.maxDate,
+    this.initialDate,
     this.monthBuilder,
     this.dayBuilder,
     this.addAutomaticKeepAlives = false,
@@ -37,16 +45,19 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.physics,
     this.scrollController,
     this.listPadding = EdgeInsets.zero,
-    this.initialDate,
   });
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
   /// `DateTime.now()` will be used
-  final DateTime? startDate;
+  final DateTime? minDate;
 
   /// optional [DateTime] to end the calendar pagination, of no [endDate] is
   /// provided the calendar can paginate indefinitely
-  final DateTime? endDate;
+  final DateTime? maxDate;
+
+  /// the initial date displayed by the calendar.
+  /// if inititial date is nulll, the start date will be used
+  final DateTime? initialDate;
 
   /// a Builder used for month header generation. a default [MonthBuilder] is
   /// used when no custom [MonthBuilder] is provided.
@@ -72,9 +83,9 @@ class PagedVerticalCalendar extends StatefulWidget {
   /// callback when a new paginated month is loaded.
   final OnMonthLoaded? onMonthLoaded;
 
-  /// called when the calendar pagination is completed. if no [endDate] is
-  /// provided this method is never called
-  final Function? onPaginationCompleted;
+  /// called when the calendar pagination is completed. if no [minDate] or [maxDate] is
+  /// provided this method is never called for that direction
+  final ValueChanged<PaginationDirection>? onPaginationCompleted;
 
   /// how many months should be loaded outside of the view. defaults to `1`
   final int invisibleMonthsThreshold;
@@ -87,10 +98,6 @@ class PagedVerticalCalendar extends StatefulWidget {
 
   /// scroll controller for making programmable scroll interactions
   final ScrollController? scrollController;
-
-  /// the initial date displayed by the calendar.
-  /// if inititial date is nulll, the start date will be used
-  final DateTime? initialDate;
 
   @override
   _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
@@ -110,11 +117,11 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     super.initState();
 
     if (widget.initialDate != null) {
-      if (widget.endDate != null) {
+      if (widget.maxDate != null) {
         int diffDaysEndDate =
-            widget.endDate!.difference(widget.initialDate!).inDays;
+            widget.maxDate!.difference(widget.initialDate!).inDays;
         if (diffDaysEndDate.isNegative) {
-          initDate = widget.endDate!;
+          initDate = widget.maxDate!;
         } else {
           initDate = widget.initialDate!;
         }
@@ -125,8 +132,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       initDate = DateTime.now().removeTime();
     }
 
-    if (widget.startDate != null) {
-      int diffDaysStartDate = widget.startDate!.difference(initDate).inDays;
+    if (widget.minDate != null) {
+      int diffDaysStartDate = widget.minDate!.difference(initDate).inDays;
       if (diffDaysStartDate.isNegative) {
         hideUp = true;
       } else {
@@ -153,12 +160,12 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
   void paginationStatusUp(PagingStatus state) {
     if (state == PagingStatus.completed)
-      return widget.onPaginationCompleted?.call();
+      return widget.onPaginationCompleted?.call(PaginationDirection.up);
   }
 
   void paginationStatusDown(PagingStatus state) {
     if (state == PagingStatus.completed)
-      return widget.onPaginationCompleted?.call();
+      return widget.onPaginationCompleted?.call(PaginationDirection.down);
   }
 
   /// fetch a new [Month] object based on the [pageKey] which is the Nth month
@@ -177,17 +184,17 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     try {
       final month = DateUtils.getMonth(
           DateTime(initDate.year, initDate.month - 1, 1),
-          widget.startDate,
+          widget.minDate,
           pageKey,
           true);
 
-      WidgetsBinding.instance?.addPostFrameCallback(
+      WidgetsBinding.instance.addPostFrameCallback(
         (_) => widget.onMonthLoaded?.call(month.year, month.month),
       );
 
       final newItems = [month];
-      final isLastPage = widget.startDate != null &&
-          widget.startDate!.isSameDayOrAfter(month.weeks.first.firstDay);
+      final isLastPage = widget.minDate != null &&
+          widget.minDate!.isSameDayOrAfter(month.weeks.first.firstDay);
 
       if (isLastPage) {
         return _pagingReplyUpController.appendLastPage(newItems);
@@ -204,18 +211,18 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     try {
       final month = DateUtils.getMonth(
         DateTime(initDate.year, initDate.month, 1),
-        widget.endDate,
+        widget.maxDate,
         pageKey,
         false,
       );
 
-      WidgetsBinding.instance?.addPostFrameCallback(
+      WidgetsBinding.instance.addPostFrameCallback(
         (_) => widget.onMonthLoaded?.call(month.year, month.month),
       );
 
       final newItems = [month];
-      final isLastPage = widget.endDate != null &&
-          widget.endDate!.isSameDayOrBefore(month.weeks.last.lastDay);
+      final isLastPage = widget.maxDate != null &&
+          widget.maxDate!.isSameDayOrBefore(month.weeks.last.lastDay);
 
       if (isLastPage) {
         return _pagingReplyDownController.appendLastPage(newItems);
