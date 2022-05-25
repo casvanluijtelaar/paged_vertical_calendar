@@ -43,6 +43,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.physics,
     this.scrollController,
     this.listPadding = EdgeInsets.zero,
+    this.startWeekWithSunday = false,
   });
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
@@ -96,6 +97,9 @@ class PagedVerticalCalendar extends StatefulWidget {
 
   /// scroll controller for making programmable scroll interactions
   final ScrollController? scrollController;
+
+  /// Select start day of the week to be Sunday
+  final bool startWeekWithSunday;
 
   @override
   _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
@@ -184,7 +188,9 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
           DateTime(initDate.year, initDate.month - 1, 1),
           widget.minDate,
           pageKey,
-          true);
+          true,
+          startWeekWithSunday: widget.startWeekWithSunday,
+      );
 
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => widget.onMonthLoaded?.call(month.year, month.month),

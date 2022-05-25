@@ -3,7 +3,7 @@ import 'package:paged_vertical_calendar/utils/date_models.dart';
 class DateUtils {
   /// generates a [Month] object from the Nth index from the startdate
   static Month getMonth(
-      DateTime? minDate, DateTime? maxDate, int monthPage, bool up) {
+      DateTime? minDate, DateTime? maxDate, int monthPage, bool up, {bool startWeekWithSunday = false}) {
     // if no start date is provided use the current date
     DateTime startDate = (minDate ?? DateTime.now()).removeTime();
 
@@ -86,10 +86,10 @@ class DateUtils {
         : firstDayOfWeek.add(Duration(days: restOfWeek));
   }
 
-  static DateTime _findDayOfWeekInMonth(DateTime date, int dayOfWeek) {
+  static DateTime _findDayOfWeekInMonth(DateTime date, int dayOfWeek, {bool startWeekWithSunday = false}) {
     date = date.removeTime();
 
-    if (date.weekday == DateTime.monday) {
+    if (date.weekday == startWeekWithSunday ? DateTime.sunday : DateTime.monday) {
       return date;
     } else {
       return date.subtract(Duration(days: date.weekday - dayOfWeek));
