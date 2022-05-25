@@ -218,6 +218,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
         widget.maxDate,
         pageKey,
         false,
+        startWeekWithSunday: widget.startWeekWithSunday,
       );
 
       WidgetsBinding.instance.addPostFrameCallback(
