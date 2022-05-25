@@ -1,3 +1,6 @@
+## 1.1.1
+* reverted scrollcontroller to 1.0.4 implementation after it was changed in 1.0.6
+
 ## 1.1.0
 * update to Flutter 3.0!!!
 * **BREAKING**: in order to better reflect the bi-directional pagination, `startDate` & `endDate`have been renamed to `minDate` & `maxDate`

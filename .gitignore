@@ -3,7 +3,6 @@
 
 .packages
 .pub/
-.fvm/
 
 build/
 Dart_SDK.xml

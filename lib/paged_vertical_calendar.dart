@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:paged_vertical_calendar/utils/date_models.dart';
 import 'package:paged_vertical_calendar/utils/date_utils.dart';
 
-
 /// enum indicating the pagination enpoint direction
 enum PaginationDirection {
   up,
@@ -238,6 +237,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   @override
   Widget build(BuildContext context) {
     return Scrollable(
+      controller: widget.scrollController,
       viewportBuilder: (BuildContext context, ViewportOffset position) {
         return Viewport(
           offset: position,
