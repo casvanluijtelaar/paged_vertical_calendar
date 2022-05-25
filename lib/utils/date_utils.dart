@@ -89,7 +89,7 @@ class DateUtils {
   static DateTime _findDayOfWeekInMonth(DateTime date, int dayOfWeek, {bool startWeekWithSunday = false}) {
     date = date.removeTime();
 
-    if (date.weekday == startWeekWithSunday ? DateTime.sunday : DateTime.monday) {
+    if (date.weekday == (startWeekWithSunday ? DateTime.sunday : DateTime.monday)) {
       return date;
     } else {
       return date.subtract(Duration(days: date.weekday - dayOfWeek));
