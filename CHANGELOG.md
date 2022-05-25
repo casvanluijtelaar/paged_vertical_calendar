@@ -1,4 +1,8 @@
 ## 1.1.1
+* updated dependencies
+* removed unnecessary `intl` dependency 
+
+## 1.1.1
 * reverted scrollcontroller to 1.0.4 implementation after it was changed in 1.0.6
 
 ## 1.1.0

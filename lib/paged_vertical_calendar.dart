@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter/rendering.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:intl/intl.dart';
 import 'package:paged_vertical_calendar/utils/date_models.dart';
 import 'package:paged_vertical_calendar/utils/date_utils.dart';
 
@@ -359,12 +358,27 @@ class _DefaultMonthView extends StatelessWidget {
 
   _DefaultMonthView({required this.month, required this.year});
 
+  final months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text(
-        DateFormat('MMMM yyyy').format(DateTime(year, month)),
+        '${months[month - 1]} $year',
         style: Theme.of(context).textTheme.headline6,
       ),
     );
@@ -380,7 +394,7 @@ class _DefaultDayView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        DateFormat('d').format(date),
+        date.day.toString(),
       ),
     );
   }
