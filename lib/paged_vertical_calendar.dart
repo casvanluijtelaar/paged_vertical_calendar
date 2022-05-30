@@ -43,6 +43,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.physics,
     this.scrollController,
     this.listPadding = EdgeInsets.zero,
+    this.startWeekWithSunday = false,
   });
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
@@ -96,6 +97,9 @@ class PagedVerticalCalendar extends StatefulWidget {
 
   /// scroll controller for making programmable scroll interactions
   final ScrollController? scrollController;
+
+  /// Select start day of the week to be Sunday
+  final bool startWeekWithSunday;
 
   @override
   _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
@@ -181,13 +185,15 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
     try {
       final month = DateUtils.getMonth(
-          DateTime(initDate.year, initDate.month - 1, 1),
-          widget.minDate,
-          pageKey,
-          true);
+        DateTime(initDate.year, initDate.month - 1, 1),
+        widget.minDate,
+        pageKey,
+        true,
+        startWeekWithSunday: widget.startWeekWithSunday,
+      );
 
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => widget.onMonthLoaded?.call(month.year, month.month),
+            (_) => widget.onMonthLoaded?.call(month.year, month.month),
       );
 
       final newItems = [month];
@@ -212,10 +218,11 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
         widget.maxDate,
         pageKey,
         false,
+        startWeekWithSunday: widget.startWeekWithSunday,
       );
 
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => widget.onMonthLoaded?.call(month.year, month.month),
+            (_) => widget.onMonthLoaded?.call(month.year, month.month),
       );
 
       final newItems = [month];
@@ -252,6 +259,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                       monthBuilder: widget.monthBuilder,
                       dayBuilder: widget.dayBuilder,
                       onDayPressed: widget.onDayPressed,
+                      startWeekWithSunday: widget.startWeekWithSunday,
                     );
                   },
                 ),
@@ -266,6 +274,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                     monthBuilder: widget.monthBuilder,
                     dayBuilder: widget.dayBuilder,
                     onDayPressed: widget.onDayPressed,
+                    startWeekWithSunday: widget.startWeekWithSunday,
                   );
                 },
               ),
@@ -289,13 +298,14 @@ class _MonthView extends StatelessWidget {
     required this.month,
     this.monthBuilder,
     this.dayBuilder,
-    this.onDayPressed,
+    this.onDayPressed, required this.startWeekWithSunday,
   });
 
   final Month month;
   final MonthBuilder? monthBuilder;
   final DayBuilder? dayBuilder;
   final ValueChanged<DateTime>? onDayPressed;
+  final bool startWeekWithSunday;
 
   @override
   Widget build(BuildContext context) {
@@ -309,7 +319,7 @@ class _MonthView extends StatelessWidget {
             ),
         Table(
           children: month.weeks.map((Week week) {
-            return _generateWeekRow(context, week);
+            return _generateWeekRow(context, week, startWeekWithSunday);
           }).toList(growable: false),
         ),
         SizedBox(
@@ -319,21 +329,21 @@ class _MonthView extends StatelessWidget {
     );
   }
 
-  TableRow _generateWeekRow(BuildContext context, Week week) {
+  TableRow _generateWeekRow(BuildContext context, Week week, bool startWeekWithSunday) {
     DateTime firstDay = week.firstDay;
 
     return TableRow(
       children: List<Widget>.generate(
         DateTime.daysPerWeek,
-        (int position) {
+            (int position) {
           DateTime day = DateTime(
             week.firstDay.year,
             week.firstDay.month,
-            firstDay.day + (position - (firstDay.weekday - 1)),
+            firstDay.day + (position - (DateUtils.getWeekDay(firstDay, startWeekWithSunday) - 1)),
           );
 
-          if ((position + 1) < week.firstDay.weekday ||
-              (position + 1) > week.lastDay.weekday) {
+          if ((position + 1) < DateUtils.getWeekDay(week.firstDay, startWeekWithSunday) ||
+              (position + 1) > DateUtils.getWeekDay(week.lastDay, startWeekWithSunday)) {
             return const SizedBox();
           } else {
             return AspectRatio(
