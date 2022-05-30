@@ -193,7 +193,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       );
 
       WidgetsBinding.instance.addPostFrameCallback(
-            (_) => widget.onMonthLoaded?.call(month.year, month.month),
+        (_) => widget.onMonthLoaded?.call(month.year, month.month),
       );
 
       final newItems = [month];
@@ -222,7 +222,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       );
 
       WidgetsBinding.instance.addPostFrameCallback(
-            (_) => widget.onMonthLoaded?.call(month.year, month.month),
+        (_) => widget.onMonthLoaded?.call(month.year, month.month),
       );
 
       final newItems = [month];
@@ -298,7 +298,8 @@ class _MonthView extends StatelessWidget {
     required this.month,
     this.monthBuilder,
     this.dayBuilder,
-    this.onDayPressed, required this.startWeekWithSunday,
+    this.onDayPressed,
+    required this.startWeekWithSunday,
   });
 
   final Month month;
@@ -329,21 +330,26 @@ class _MonthView extends StatelessWidget {
     );
   }
 
-  TableRow _generateWeekRow(BuildContext context, Week week, bool startWeekWithSunday) {
+  TableRow _generateWeekRow(
+      BuildContext context, Week week, bool startWeekWithSunday) {
     DateTime firstDay = week.firstDay;
 
     return TableRow(
       children: List<Widget>.generate(
         DateTime.daysPerWeek,
-            (int position) {
+        (int position) {
           DateTime day = DateTime(
             week.firstDay.year,
             week.firstDay.month,
-            firstDay.day + (position - (DateUtils.getWeekDay(firstDay, startWeekWithSunday) - 1)),
+            firstDay.day +
+                (position -
+                    (DateUtils.getWeekDay(firstDay, startWeekWithSunday) - 1)),
           );
 
-          if ((position + 1) < DateUtils.getWeekDay(week.firstDay, startWeekWithSunday) ||
-              (position + 1) > DateUtils.getWeekDay(week.lastDay, startWeekWithSunday)) {
+          if ((position + 1) <
+                  DateUtils.getWeekDay(week.firstDay, startWeekWithSunday) ||
+              (position + 1) >
+                  DateUtils.getWeekDay(week.lastDay, startWeekWithSunday)) {
             return const SizedBox();
           } else {
             return AspectRatio(

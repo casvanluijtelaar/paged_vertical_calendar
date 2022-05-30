@@ -1,4 +1,7 @@
-## 1.1.1
+## 1.1.3
+* ability to start the week on Sunday. Thanks to [dmitry-kotorov](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/20)
+
+## 1.1.2
 * updated dependencies
 * removed unnecessary `intl` dependency 
 

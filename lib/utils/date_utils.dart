@@ -3,8 +3,12 @@ import 'package:paged_vertical_calendar/utils/date_models.dart';
 class DateUtils {
   /// generates a [Month] object from the Nth index from the startdate
   static Month getMonth(
-      DateTime? minDate, DateTime? maxDate, int monthPage, bool up,
-      {bool startWeekWithSunday = false}) {
+    DateTime? minDate,
+    DateTime? maxDate,
+    int monthPage,
+    bool up, {
+    bool startWeekWithSunday = false,
+  }) {
     // if no start date is provided use the current date
     DateTime startDate = (minDate ?? DateTime.now()).removeTime();
 
@@ -22,8 +26,10 @@ class DateUtils {
 
     // find the first day of the first week in this month
     final weekMinDate = _findDayOfWeekInMonth(
-        startDate, getWeekDay(startDate, startWeekWithSunday),
-        startWeekWithSunday: startWeekWithSunday);
+      startDate,
+      getWeekDay(startDate, startWeekWithSunday),
+      startWeekWithSunday: startWeekWithSunday,
+    );
 
     // every week has a start and end date, calculate them once for the start
     // of the month then reuse these variables for every other week in
@@ -88,19 +94,24 @@ class DateUtils {
   /// standard week and evaluating if this week extends beyond the total days
   /// in that month, and capping it to the end of the month if it does
   static DateTime _lastDayOfWeek(
-      DateTime firstDayOfWeek, bool startWeekWithSunday) {
+    DateTime firstDayOfWeek,
+    bool startWeekWithSunday,
+  ) {
     int daysInMonth = firstDayOfWeek.daysInMonth;
 
-    final restOfWeek = (DateTime.daysPerWeek -
-        getWeekDay(firstDayOfWeek, startWeekWithSunday));
+    final dayOfWeek = getWeekDay(firstDayOfWeek, startWeekWithSunday);
+    final restOfWeek = DateTime.daysPerWeek - dayOfWeek;
 
     return firstDayOfWeek.day + restOfWeek > daysInMonth
         ? DateTime(firstDayOfWeek.year, firstDayOfWeek.month, daysInMonth)
         : firstDayOfWeek.add(Duration(days: restOfWeek));
   }
 
-  static DateTime _findDayOfWeekInMonth(DateTime date, int dayOfWeek,
-      {bool startWeekWithSunday = false}) {
+  static DateTime _findDayOfWeekInMonth(
+    DateTime date,
+    int dayOfWeek, {
+    bool startWeekWithSunday = false,
+  }) {
     date = date.removeTime();
 
     if (date.weekday ==
@@ -113,19 +124,19 @@ class DateUtils {
   }
 
   static List<int> daysPerMonth(int year) => <int>[
-    31,
-    _isLeapYear(year) ? 29 : 28,
-    31,
-    30,
-    31,
-    30,
-    31,
-    31,
-    30,
-    31,
-    30,
-    31,
-  ];
+        31,
+        _isLeapYear(year) ? 29 : 28,
+        31,
+        30,
+        31,
+        30,
+        31,
+        31,
+        30,
+        31,
+        30,
+        31,
+      ];
 
   /// efficient leapyear calcualtion transcribed from a C stackoverflow answer
   static bool _isLeapYear(int year) {

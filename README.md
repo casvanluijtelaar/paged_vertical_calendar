@@ -35,6 +35,7 @@ PagedVerticalCalendar(
   maxDate: DateTime.now().add(Duration(days 365)),
   initialDate: DateTime.now().add(Duration(days 3)),
   invisibleMonthsThreshold: 1,
+  startWeekWithSunday: true,
   onMonthLoaded: (year, month) {
     // on month widget load 
   },
@@ -46,19 +47,21 @@ PagedVerticalCalendar(
   },
 );
 ```
-`onMonthLoaded` is a callback that fires for every month added to the list. When this function fires can be altered by setting the `invisibleMonthsThreshold` pararamter. 
+* `onMonthLoaded` is a callback that fires for every month added to the list. When this function fires can be altered by setting the `invisibleMonthsThreshold` pararamter. 
 
-`invisibleMonthsThreshold` decides how many months outside of the widgets view should be loaded. In other words, how many months should be preloaded before the user reaches that scroll position. It defaults to `1`.
+* `invisibleMonthsThreshold` decides how many months outside of the widgets view should be loaded. In other words, how many months should be preloaded before the user reaches that scroll position. It defaults to `1`.
 
-`onDayPressed` is a simple `onPressed` callback but also provides the `DateTime` of the day that has been pressed.
+* `onDayPressed` Is a simple `onPressed` callback but also provides the `DateTime` of the day that has been pressed.
 
-If a `minDate` is provided the calendar will stop scrolling up at that date. make sure `minDate` < `maxDate`. 
+* If your app is localized for countries where the week starts on  Sunday, you can flip `startWeekWithSunday`to `true`.
 
-If a `maxDate` is provided the calendar will stop scrolling down at that date. make sure `maxDate` > `minDate`. 
+* If a `minDate` is provided the calendar will stop scrolling up at that date. make sure `minDate` < `maxDate`. 
 
-If an `initialDate` is provided the calendar start by displaying this date (otherwise `DateTime.now()`). make sure `minDate` < `initialData` < `maxDate`. 
+* If a `maxDate` is provided the calendar will stop scrolling down at that date. make sure `maxDate` > `minDate`. 
 
-Finally when a `minDate` or `maxDate` is provided to the `PagedVerticalCalendar`, the `onPaginationCompleted` callback can be used. it will return a `PaginationDirection` to indicate what side of the calendar has been reached.
+* If an `initialDate` is provided the calendar start by displaying this date (otherwise `DateTime.now()`). make sure `minDate` < `initialData` < `maxDate`. 
+
+* Finally when a `minDate` or `maxDate` is provided to the `PagedVerticalCalendar`, the `onPaginationCompleted` callback can be used. it will return a `PaginationDirection` to indicate what side of the calendar has been reached.
 
 
 
@@ -78,9 +81,9 @@ PagedVerticalCalendar(
 );
 ```
 
-`monthBuilder` provides the year and month as `integers`. this builder has to return a widget that will form the header of ever month. the [intl](https://pub.dev/packages/intl) package works well here for date formatting.
+* `monthBuilder` provides the year and month as `integers`. this builder has to return a widget that will form the header of ever month. the [intl](https://pub.dev/packages/intl) package works well here for date formatting.
 
-`dayBuilder` provides the day as a `DateTime`. this builder wil be called for every day. You usually want to provide at least a text widget with the current day number. 
+* `dayBuilder` provides the day as a `DateTime`. this builder wil be called for every day. You usually want to provide at least a text widget with the current day number. 
 
 ## :wave: Get Involved
 
