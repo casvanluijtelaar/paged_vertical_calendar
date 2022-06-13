@@ -39,9 +39,16 @@ class Home extends StatelessWidget {
 
 /// simple demonstration of the calendar customizability
 class Custom extends StatelessWidget {
+
+  static const bool startWithSunday = false;
+
   @override
   Widget build(BuildContext context) {
     return PagedVerticalCalendar(
+      minDate: DateTime.now().subtract(const Duration(days: 60)),
+      initialDate: DateTime.now().subtract(const Duration(days: 60)),
+      maxDate: DateTime.now().subtract(const Duration(days: 30)),
+      startWeekWithSunday: startWithSunday,
       /// customize the month header look by adding a week indicator
       monthBuilder: (context, month, year) {
         return Column(
@@ -69,13 +76,14 @@ class Custom extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  if(startWithSunday) weekText('Su'),
                   weekText('Mo'),
                   weekText('Tu'),
                   weekText('We'),
                   weekText('Th'),
                   weekText('Fr'),
                   weekText('Sa'),
-                  weekText('Su'),
+                  if(!startWithSunday) weekText('Su'),
                 ],
               ),
             ),

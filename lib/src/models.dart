@@ -1,15 +1,14 @@
-import 'package:paged_vertical_calendar/utils/date_utils.dart';
+
+import 'extensions.dart';
 
 class Month {
-  final int month;
-  final int year;
-  final int daysInMonth;
+  const Month(this.weeks);
+
   final List<Week> weeks;
 
-  Month(this.weeks)
-      : year = weeks.first.firstDay.year,
-        month = weeks.first.firstDay.month,
-        daysInMonth = weeks.first.firstDay.daysInMonth;
+  int get year => weeks.first.firstDay.year;
+  int get month => weeks.first.firstDay.month;
+  int get daysInMonth => weeks.first.firstDay.daysInMonth;
 
   @override
   String toString() {
