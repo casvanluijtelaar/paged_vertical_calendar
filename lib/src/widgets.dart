@@ -120,12 +120,19 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
   bool get canScrollUp {
     if (minDate == null) return true;
-    return initialDate.isAfter(minDate!);
+    final isBefore = minDate!.isBefore(initialDate);
+    final isDifferent = minDate!.year != initialDate.year ||
+        minDate!.month != initialDate.month;
+    return isBefore && isDifferent;
   }
 
   bool get canScrollDown {
     if (maxDate == null) return true;
-    return initialDate.isBefore(maxDate!);
+    final isAfter = maxDate!.isAfter(initialDate);
+    final isDifferent = maxDate!.year != initialDate.year ||
+        maxDate!.month != initialDate.month;
+
+    return isAfter && isDifferent;
   }
 
   @override
@@ -193,7 +200,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   }
 
   /// fetch a new [Month] object based on the [pageKey] which is the Nth month
-  /// from the start date
+  /// before the start date
   void _fetchPreviousPage(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
@@ -221,6 +228,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     }
   }
 
+  /// fetch a new [Month] object based on the [pageKey] which is the Nth month
+  /// after the start date
   void _fetchNextPage(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
@@ -308,12 +317,13 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 /// builds an widget from a [Month] instance
 class _MonthView extends StatelessWidget {
   _MonthView({
+    Key? key,
     required this.month,
     this.monthBuilder,
     this.dayBuilder,
     this.onDayPressed,
     required this.startWeekWithSunday,
-  });
+  }) : super(key: key);
 
   final Month month;
   final MonthBuilder? monthBuilder;

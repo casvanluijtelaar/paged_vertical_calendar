@@ -45,15 +45,13 @@ class Custom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PagedVerticalCalendar(
-      minDate: DateTime.now().subtract(const Duration(days: 60)),
-      initialDate: DateTime.now().subtract(const Duration(days: 60)),
-      maxDate: DateTime.now().subtract(const Duration(days: 30)),
+      minDate: DateTime(2022, 1, 10),
+      maxDate: DateTime(2022, 5, 2),
       startWeekWithSunday: startWithSunday,
       /// customize the month header look by adding a week indicator
       monthBuilder: (context, month, year) {
         return Column(
           children: [
-            /// create a customized header displaying the month and year
             Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
               margin: const EdgeInsets.all(20),

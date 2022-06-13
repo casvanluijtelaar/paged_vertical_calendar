@@ -11,8 +11,7 @@ class DateUtils {
   ///   which we want to calcukate the month can be negative for
   ///   previous months
   /// * startWeekWithSunday: in some parts of the world the week starts with sunday
-  ///   we need to indicate that as such for correct month
-  ///  calculation
+  ///   we need to indicate that as such for correct month calculation
   static Month getMonth({
     required DateTime startDate,
     DateTime? endDate,
