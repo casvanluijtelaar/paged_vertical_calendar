@@ -120,13 +120,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
     if (widget.initialDate != null) {
       if (widget.maxDate != null) {
-        int diffDaysEndDate =
-            widget.maxDate!.difference(widget.initialDate!).inDays;
-        if (diffDaysEndDate.isNegative) {
-          initDate = widget.maxDate!;
-        } else {
-          initDate = widget.initialDate!;
-        }
+        final dif = widget.maxDate!.difference(widget.initialDate!).inDays;
+        initDate = dif.isNegative ? widget.maxDate! : widget.initialDate!;
       } else {
         initDate = widget.initialDate!;
       }
@@ -136,11 +131,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
     if (widget.minDate != null) {
       int diffDaysStartDate = widget.minDate!.difference(initDate).inDays;
-      if (diffDaysStartDate.isNegative) {
-        hideUp = true;
-      } else {
-        hideUp = false;
-      }
+      hideUp = diffDaysStartDate.isNegative;
     } else {
       hideUp = true;
     }
@@ -160,6 +151,20 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     _pagingReplyDownController.addStatusListener(paginationStatusDown);
   }
 
+  @override
+  void didUpdateWidget(covariant PagedVerticalCalendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialDate != oldWidget.initialDate) {
+      initDate = widget.initialDate ?? DateTime.now().removeTime();
+    }
+
+    if (widget.minDate != oldWidget.minDate ||
+        widget.maxDate != oldWidget.maxDate) {
+      _pagingReplyUpController.refresh();
+      _pagingReplyDownController.refresh();
+    }
+  }
+
   void paginationStatusUp(PagingStatus state) {
     if (state == PagingStatus.completed)
       return widget.onPaginationCompleted?.call(PaginationDirection.up);
@@ -173,16 +178,6 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   /// fetch a new [Month] object based on the [pageKey] which is the Nth month
   /// from the start date
   void _fetchUpPage(int pageKey) async {
-    // DateTime startDateUp = widget.startDate != null
-    //     ? DateTime(widget.startDate!.year,
-    //         widget.startDate!.month + initialIndex, widget.startDate!.day)
-    //     : DateTime.now();
-
-    // DateTime initDateUp =
-    //     Jiffy(DateTime(initialDate.year, initialDate.month, 1))
-    //         .subtract(months: 1)
-    //         .dateTime;
-
     try {
       final month = DateUtils.getMonth(
         DateTime(initDate.year, initDate.month - 1, 1),
