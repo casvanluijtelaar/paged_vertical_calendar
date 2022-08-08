@@ -1,3 +1,6 @@
+## 1.1.4
+* reimplement ScrollPhysics after it was removed by 1.0.6
+
 ## 1.1.3
 * ability to start the week on Sunday. Thanks to [dmitry-kotorov](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/20)
 
