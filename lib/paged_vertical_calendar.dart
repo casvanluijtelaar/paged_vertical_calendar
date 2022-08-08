@@ -159,7 +159,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     }
     if (widget.minDate != oldWidget.minDate) {
       _pagingReplyUpController.refresh();
-      
+
       hideUp = widget.minDate?.isBefore(initDate) ?? false;
     }
   }
