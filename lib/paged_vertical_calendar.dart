@@ -32,7 +32,7 @@ class PagedVerticalCalendar extends StatefulWidget {
   PagedVerticalCalendar({
     this.minDate,
     this.maxDate,
-    this.initialDate,
+    DateTime? initialDate,
     this.monthBuilder,
     this.dayBuilder,
     this.addAutomaticKeepAlives = false,
@@ -44,7 +44,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.scrollController,
     this.listPadding = EdgeInsets.zero,
     this.startWeekWithSunday = false,
-  });
+  }) : this.initialDate = initialDate ?? DateTime.now().removeTime();
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
   /// `DateTime.now()` will be used
@@ -56,7 +56,7 @@ class PagedVerticalCalendar extends StatefulWidget {
 
   /// the initial date displayed by the calendar.
   /// if inititial date is nulll, the start date will be used
-  final DateTime? initialDate;
+  final DateTime initialDate;
 
   /// a Builder used for month header generation. a default [MonthBuilder] is
   /// used when no custom [MonthBuilder] is provided.
@@ -110,31 +110,23 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   late PagingController<int, Month> _pagingReplyDownController;
 
   final Key downListKey = UniqueKey();
-
-  late DateTime initDate;
   late bool hideUp;
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.initialDate != null) {
-      if (widget.maxDate != null) {
-        final dif = widget.maxDate!.difference(widget.initialDate!).inDays;
-        initDate = dif.isNegative ? widget.maxDate! : widget.initialDate!;
-      } else {
-        initDate = widget.initialDate!;
-      }
-    } else {
-      initDate = DateTime.now().removeTime();
+    if (widget.minDate != null &&
+        widget.initialDate.isBefore(widget.minDate!)) {
+      throw ArgumentError("initialDate cannot be before minDate");
     }
 
-    if (widget.minDate != null) {
-      int diffDaysStartDate = widget.minDate!.difference(initDate).inDays;
-      hideUp = diffDaysStartDate.isNegative;
-    } else {
-      hideUp = true;
+    if (widget.maxDate != null && widget.initialDate.isAfter(widget.maxDate!)) {
+      throw ArgumentError("initialDate cannot be after maxDate");
     }
+
+    hideUp = !(widget.minDate == null ||
+        !widget.minDate!.isSameMonth(widget.initialDate));
 
     _pagingReplyUpController = PagingController<int, Month>(
       firstPageKey: 0,
@@ -154,13 +146,12 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   @override
   void didUpdateWidget(covariant PagedVerticalCalendar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialDate != oldWidget.initialDate) {
-      initDate = widget.initialDate ?? DateTime.now().removeTime();
-    }
+
     if (widget.minDate != oldWidget.minDate) {
       _pagingReplyUpController.refresh();
 
-      hideUp = widget.minDate?.isBefore(initDate) ?? false;
+      hideUp = !(widget.minDate == null ||
+          !widget.minDate!.isSameMonth(widget.initialDate));
     }
   }
 
@@ -179,7 +170,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   void _fetchUpPage(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
-        DateTime(initDate.year, initDate.month - 1, 1),
+        DateTime(widget.initialDate.year, widget.initialDate.month - 1, 1),
         widget.minDate,
         pageKey,
         true,
@@ -208,7 +199,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   void _fetchDownPage(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
-        DateTime(initDate.year, initDate.month, 1),
+        DateTime(widget.initialDate.year, widget.initialDate.month, 1),
         widget.maxDate,
         pageKey,
         false,
@@ -244,7 +235,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
           offset: position,
           center: downListKey,
           slivers: [
-            if (hideUp)
+            if (!hideUp)
               PagedSliverList(
                 pagingController: _pagingReplyUpController,
                 builderDelegate: PagedChildBuilderDelegate<Month>(

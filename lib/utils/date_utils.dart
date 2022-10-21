@@ -1,6 +1,6 @@
 import 'package:paged_vertical_calendar/utils/date_models.dart';
 
-class DateUtils {
+abstract class DateUtils {
   /// generates a [Month] object from the Nth index from the startdate
   static Month getMonth(
     DateTime? minDate,
@@ -157,4 +157,6 @@ extension DateUtilsExtensions on DateTime {
       year == other.year && month == other.month && day == other.day;
 
   DateTime removeTime() => DateTime(year, month, day);
+
+  bool isSameMonth(DateTime other) => other.year == year && other.month == month;
 }
