@@ -1,3 +1,5 @@
+## 1.1.5
+* fix potential infinite loader when minDate & initialDate are in the same month
 ## 1.1.4
 * reimplement ScrollPhysics after it was removed by 1.0.6
 
