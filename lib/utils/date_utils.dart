@@ -142,6 +142,44 @@ abstract class DateUtils {
   static bool _isLeapYear(int year) {
     return (year & 3) == 0 && ((year % 25) != 0 || (year & 15) == 0);
   }
+
+  static List<DateTime> listOfValidDatesInMonth(
+      Month month, List<int> weekdaysToHide) {
+    final totalDays = month.daysInMonth;
+    final validDates = <DateTime>[];
+    for (int i = 1; i <= totalDays; i++) {
+      final date = DateTime(month.year, month.month, i);
+      if (!weekdaysToHide.contains(date.weekday)) {
+        validDates.add(date);
+      }
+    }
+    return (validDates);
+  }
+
+  /// This method return no of space required before first valid date considering
+  /// whether previous days are hidden. For Eg if 1st valid date falls in Tuesday
+  /// and the calendar start with Sunday as well as we are hiding Monday then
+  /// the index is going to be Sun,Tuesday so 1. so we need to have empty space
+  /// with given index
+  static int getNoOfSpaceRequiredBeforeFirstValidDate(
+      List<int> weekdaysToHide, int weekdayValueForFirstValidDay,
+      [bool isSundayFirstDayOfWeek = false]) {
+    final mondayWeekDayList =
+        List.generate(DateTime.daysPerWeek, (index) => 1 + index);
+    final sundayWeekDayList = [
+      DateTime.sunday,
+      ...[...mondayWeekDayList]..remove(DateTime.sunday),
+    ];
+
+    mondayWeekDayList
+        .removeWhere((weekday) => weekdaysToHide.contains(weekday));
+    sundayWeekDayList
+        .removeWhere((weekday) => weekdaysToHide.contains(weekday));
+    final noOfSpaceRequiredBeforeFirstValidDate = isSundayFirstDayOfWeek
+        ? sundayWeekDayList.indexOf(weekdayValueForFirstValidDay)
+        : mondayWeekDayList.indexOf(weekdayValueForFirstValidDay);
+    return noOfSpaceRequiredBeforeFirstValidDate;
+  }
 }
 
 extension DateUtilsExtensions on DateTime {
