@@ -92,7 +92,6 @@ class Custom extends StatelessWidget {
       /// added a line between every week
       dayBuilder: (context, date) {
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(DateFormat('d').format(date)),
             const Divider(),
