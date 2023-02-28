@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart' hide DateUtils;
-import 'package:flutter/rendering.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:paged_vertical_calendar/utils/date_models.dart';
 import 'package:paged_vertical_calendar/utils/date_utils.dart';
@@ -42,7 +41,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.invisibleMonthsThreshold = 1,
     this.physics,
     this.scrollController,
-    this.listPadding = EdgeInsets.zero,
+    this.calendarPadding = EdgeInsets.zero,
     this.startWeekWithSunday = false,
   }) : this.initialDate = initialDate ?? DateTime.now().removeTime();
 
@@ -89,8 +88,8 @@ class PagedVerticalCalendar extends StatefulWidget {
   /// how many months should be loaded outside of the view. defaults to `1`
   final int invisibleMonthsThreshold;
 
-  /// list padding, defaults to `EdgeInsets.zero`
-  final EdgeInsetsGeometry listPadding;
+  /// calendar padding, defaults to `EdgeInsets.zero`
+  final EdgeInsetsGeometry calendarPadding;
 
   /// scroll physics, defaults to matching platform conventions
   final ScrollPhysics? physics;
@@ -227,47 +226,42 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    return Scrollable(
-      controller: widget.scrollController,
-      physics: widget.physics,
-      viewportBuilder: (BuildContext context, ViewportOffset position) {
-        return Viewport(
-          offset: position,
-          center: downListKey,
-          slivers: [
-            if (!hideUp)
-              PagedSliverList(
-                pagingController: _pagingReplyUpController,
-                builderDelegate: PagedChildBuilderDelegate<Month>(
-                  itemBuilder: (BuildContext context, Month month, int index) {
-                    return _MonthView(
-                      month: month,
-                      monthBuilder: widget.monthBuilder,
-                      dayBuilder: widget.dayBuilder,
-                      onDayPressed: widget.onDayPressed,
-                      startWeekWithSunday: widget.startWeekWithSunday,
-                    );
-                  },
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: widget.calendarPadding,
+          sliver: hideUp
+              ? PagedSliverList(
+                  key: downListKey,
+                  pagingController: _pagingReplyDownController,
+                  builderDelegate: PagedChildBuilderDelegate<Month>(
+                    itemBuilder: (BuildContext context, Month month, int index) {
+                      return _MonthView(
+                        month: month,
+                        monthBuilder: widget.monthBuilder,
+                        dayBuilder: widget.dayBuilder,
+                        onDayPressed: widget.onDayPressed,
+                        startWeekWithSunday: widget.startWeekWithSunday,
+                      );
+                    },
+                  ),
+                )
+              : PagedSliverList(
+                  pagingController: _pagingReplyUpController,
+                  builderDelegate: PagedChildBuilderDelegate<Month>(
+                    itemBuilder: (BuildContext context, Month month, int index) {
+                      return _MonthView(
+                        month: month,
+                        monthBuilder: widget.monthBuilder,
+                        dayBuilder: widget.dayBuilder,
+                        onDayPressed: widget.onDayPressed,
+                        startWeekWithSunday: widget.startWeekWithSunday,
+                      );
+                    },
+                  ),
                 ),
-              ),
-            PagedSliverList(
-              key: downListKey,
-              pagingController: _pagingReplyDownController,
-              builderDelegate: PagedChildBuilderDelegate<Month>(
-                itemBuilder: (BuildContext context, Month month, int index) {
-                  return _MonthView(
-                    month: month,
-                    monthBuilder: widget.monthBuilder,
-                    dayBuilder: widget.dayBuilder,
-                    onDayPressed: widget.onDayPressed,
-                    startWeekWithSunday: widget.startWeekWithSunday,
-                  );
-                },
-              ),
-            ),
-          ],
-        );
-      },
+        )
+      ],
     );
   }
 
