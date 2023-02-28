@@ -227,6 +227,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
+      controller: widget.scrollController,
+      physics: widget.physics,
       slivers: [
         SliverPadding(
           padding: widget.calendarPadding,
