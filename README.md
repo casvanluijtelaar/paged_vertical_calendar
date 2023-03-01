@@ -78,8 +78,7 @@ PagedVerticalCalendar(
   dayBuilder: (context, date) {
     // provide a day widget
   },
-  calendarBottomPadding: //provide a bottom padding value
-  calendarTopPadding: //provide a top padding value,
+  listPadding: // provide EdgeInset value
 );
 ```
 
@@ -87,7 +86,7 @@ PagedVerticalCalendar(
 
 * `dayBuilder` provides the day as a `DateTime`. this builder wil be called for every day. You usually want to provide at least a text widget with the current day number.
 
-* `calendarBottomPadding` and `calendarTopPadding` provide a way for the calendar to have vertical padding.
+* `listPadding` can be provided in case you need the list to have padding.
 
 ## :wave: Get Involved
 
