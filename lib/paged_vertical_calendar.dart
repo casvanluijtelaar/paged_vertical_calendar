@@ -392,7 +392,7 @@ class _DefaultMonthView extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Text(
         '${months[month - 1]} $year',
-        style: Theme.of(context).textTheme.headline6,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
     );
   }
