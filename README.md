@@ -78,12 +78,15 @@ PagedVerticalCalendar(
   dayBuilder: (context, date) {
     // provide a day widget
   },
+  listPadding: // provide EdgeInset value
 );
 ```
 
 * `monthBuilder` provides the year and month as `integers`. this builder has to return a widget that will form the header of ever month. the [intl](https://pub.dev/packages/intl) package works well here for date formatting.
 
-* `dayBuilder` provides the day as a `DateTime`. this builder wil be called for every day. You usually want to provide at least a text widget with the current day number. 
+* `dayBuilder` provides the day as a `DateTime`. this builder wil be called for every day. You usually want to provide at least a text widget with the current day number.
+
+* `listPadding` can be provided in case you need the list to have padding.
 
 ## :wave: Get Involved
 
