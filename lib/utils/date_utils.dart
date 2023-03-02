@@ -104,7 +104,7 @@ abstract class DateUtils {
 
     return firstDayOfWeek.day + restOfWeek > daysInMonth
         ? DateTime(firstDayOfWeek.year, firstDayOfWeek.month, daysInMonth)
-        : firstDayOfWeek.add(Duration(days: restOfWeek));
+        : firstDayOfWeek.addDays(restOfWeek);
   }
 
   static DateTime _findDayOfWeekInMonth(
@@ -160,4 +160,17 @@ extension DateUtilsExtensions on DateTime {
 
   bool isSameMonth(DateTime other) =>
       other.year == year && other.month == month;
+
+  DateTime addDays(int daysToAdd) {
+    return DateTime(
+      this.year,
+      this.month,
+      this.day + daysToAdd,
+      this.hour,
+      this.minute,
+      this.second,
+      this.millisecond,
+      this.microsecond,
+    );
+  }
 }
