@@ -42,10 +42,6 @@ class Custom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PagedVerticalCalendar(
-      weekdaysToHide: [
-        DateTime.saturday,
-        DateTime.sunday,
-      ],
       startWeekWithSunday: true,
 
       /// customize the month header look by adding a week indicator
@@ -75,13 +71,13 @@ class Custom extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // weekText('Su'),
+                  weekText('Su'),
                   weekText('Mo'),
                   weekText('Tu'),
                   weekText('We'),
                   weekText('Th'),
                   weekText('Fr'),
-                  // weekText('Sa'),
+                  weekText('Sa'),
                 ],
               ),
             ),
