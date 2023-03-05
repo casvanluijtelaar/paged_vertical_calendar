@@ -164,12 +164,8 @@ abstract class DateUtils {
   static int getNoOfSpaceRequiredBeforeFirstValidDate(
       List<int> weekdaysToHide, int weekdayValueForFirstValidDay,
       [bool isSundayFirstDayOfWeek = false]) {
-    final mondayWeekDayList =
-        List.generate(DateTime.daysPerWeek, (index) => 1 + index);
-    final sundayWeekDayList = [
-      DateTime.sunday,
-      ...[...mondayWeekDayList]..remove(DateTime.sunday),
-    ];
+    final mondayWeekDayList = [1, 2, 3, 4, 5, 6, 7];
+    final sundayWeekDayList = [7, 1, 2, 3, 4, 5, 6];
 
     mondayWeekDayList
         .removeWhere((weekday) => weekdaysToHide.contains(weekday));

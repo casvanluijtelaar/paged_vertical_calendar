@@ -103,7 +103,7 @@ class PagedVerticalCalendar extends StatefulWidget {
   final bool startWeekWithSunday;
 
   /// Hide certain Weekdays eg.Weekends by providing
-  /// `[DateTime.sunday,DateTime.monday]`. defaults to `[]`
+  /// `[DateTime.sunday,DateTime.monday]`. By default all weekdays are shown
   final List<int> weekdaysToHide;
 
   @override
