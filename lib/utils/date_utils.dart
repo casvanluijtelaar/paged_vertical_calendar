@@ -171,10 +171,9 @@ abstract class DateUtils {
         .removeWhere((weekday) => weekdaysToHide.contains(weekday));
     sundayWeekDayList
         .removeWhere((weekday) => weekdaysToHide.contains(weekday));
-    final noOfSpaceRequiredBeforeFirstValidDate = isSundayFirstDayOfWeek
+    return isSundayFirstDayOfWeek
         ? sundayWeekDayList.indexOf(weekdayValueForFirstValidDay)
         : mondayWeekDayList.indexOf(weekdayValueForFirstValidDay);
-    return noOfSpaceRequiredBeforeFirstValidDate;
   }
 }
 
