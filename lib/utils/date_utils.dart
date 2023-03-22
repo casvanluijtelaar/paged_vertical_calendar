@@ -144,7 +144,10 @@ abstract class DateUtils {
   }
 
   static List<DateTime> listOfValidDatesInMonth(
-      Month month, List<int> weekdaysToHide) {
+    Month month,
+    List<int> weekdaysToHide,
+  ) {
+
     final totalDays = month.daysInMonth;
     final validDates = <DateTime>[];
     for (int i = 1; i <= totalDays; i++) {
@@ -156,21 +159,24 @@ abstract class DateUtils {
     return (validDates);
   }
 
-  /// This method return no of space required before first valid date considering
-  /// whether previous days are hidden. For Eg if 1st valid date falls in Tuesday
-  /// and the calendar start with Sunday as well as we are hiding Monday then
-  /// the index is going to be Sun,Tuesday so 1. so we need to have empty space
-  /// with given index
+  /// This method returns the number of spaces required before first valid based of the hidden weekdays. 
+  /// For example, if the first valid date falls on a Tuesday, that means that the weekday "monday"
+  /// is hidden, which makes the first valid date index "1"
   static int getNoOfSpaceRequiredBeforeFirstValidDate(
-      List<int> weekdaysToHide, int weekdayValueForFirstValidDay,
-      [bool isSundayFirstDayOfWeek = false]) {
+    List<int> weekdaysToHide,
+    int weekdayValueForFirstValidDay, [
+    bool isSundayFirstDayOfWeek = false,
+  ]) {
     final mondayWeekDayList = [1, 2, 3, 4, 5, 6, 7];
     final sundayWeekDayList = [7, 1, 2, 3, 4, 5, 6];
 
-    mondayWeekDayList
-        .removeWhere((weekday) => weekdaysToHide.contains(weekday));
-    sundayWeekDayList
-        .removeWhere((weekday) => weekdaysToHide.contains(weekday));
+    mondayWeekDayList.removeWhere(
+      (weekday) => weekdaysToHide.contains(weekday),
+    );
+    sundayWeekDayList.removeWhere(
+      (weekday) => weekdaysToHide.contains(weekday),
+    );
+
     return isSundayFirstDayOfWeek
         ? sundayWeekDayList.indexOf(weekdayValueForFirstValidDay)
         : mondayWeekDayList.indexOf(weekdayValueForFirstValidDay);

@@ -43,7 +43,6 @@ class Custom extends StatelessWidget {
   Widget build(BuildContext context) {
     return PagedVerticalCalendar(
       startWeekWithSunday: true,
-
       /// customize the month header look by adding a week indicator
       monthBuilder: (context, month, year) {
         return Column(
@@ -135,7 +134,6 @@ class _DatePickerState extends State<DatePicker> {
   @override
   Widget build(BuildContext context) {
     return PagedVerticalCalendar(
-      startWeekWithSunday: true,
       addAutomaticKeepAlives: true,
       dayBuilder: (context, date) {
         // update the days color based on if it's selected or not

@@ -318,12 +318,14 @@ class _MonthView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// if we have weekDaysToHide we need to replace those dates with blank spaces
     final validDates = DateUtils.listOfValidDatesInMonth(month, weekDaysToHide);
-    final noOfSpaceRequiredBeforeFirstValidDate =
-        DateUtils.getNoOfSpaceRequiredBeforeFirstValidDate(
-            weekDaysToHide,
-            validDates.isNotEmpty ? validDates.first.weekday : 0,
-            startWeekWithSunday);
+    final blankSpaces = DateUtils.getNoOfSpaceRequiredBeforeFirstValidDate(
+      weekDaysToHide,
+      validDates.isNotEmpty ? validDates.first.weekday : 0,
+      startWeekWithSunday,
+    );
+
     return Column(
       children: <Widget>[
         /// display the default month header if none is provided
@@ -333,33 +335,29 @@ class _MonthView extends StatelessWidget {
               year: month.year,
             ),
         GridView.builder(
-            addRepaintBoundaries: false,
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: DateTime.daysPerWeek - weekDaysToHide.length),
-            itemCount:
-                validDates.length + noOfSpaceRequiredBeforeFirstValidDate,
-            itemBuilder: (BuildContext context, int index) {
-              if (index < noOfSpaceRequiredBeforeFirstValidDate) {
-                return SizedBox();
-              }
-              final date =
-                  validDates[index - noOfSpaceRequiredBeforeFirstValidDate];
-              return AspectRatio(
-                aspectRatio: 1.0,
-                child: InkWell(
-                  onTap:
-                      onDayPressed == null ? null : () => onDayPressed!(date),
-                  child: dayBuilder?.call(context, date) ??
-                      _DefaultDayView(date: date),
-                ),
-              );
-            }),
-        SizedBox(
-          height: 20,
+          addRepaintBoundaries: false,
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          padding: EdgeInsets.zero,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: DateTime.daysPerWeek - weekDaysToHide.length,
+          ),
+          itemCount: validDates.length + blankSpaces,
+          itemBuilder: (BuildContext context, int index) {
+            if (index < blankSpaces) return SizedBox();
+
+            final date = validDates[index - blankSpaces];
+            return AspectRatio(
+              aspectRatio: 1.0,
+              child: InkWell(
+                onTap: onDayPressed == null ? null : () => onDayPressed!(date),
+                child: dayBuilder?.call(context, date) ??
+                    _DefaultDayView(date: date),
+              ),
+            );
+          },
         ),
+        SizedBox(height: 20),
       ],
     );
   }
