@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:paged_vertical_calendar/paged_vertical_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:paged_vertical_calendar/paged_vertical_calendar.dart';
 
 void main() => runApp(Home());
 
@@ -42,6 +42,8 @@ class Custom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PagedVerticalCalendar(
+      startWeekWithSunday: true,
+
       /// customize the month header look by adding a week indicator
       monthBuilder: (context, month, year) {
         return Column(
@@ -69,13 +71,13 @@ class Custom extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  weekText('Su'),
                   weekText('Mo'),
                   weekText('Tu'),
                   weekText('We'),
                   weekText('Th'),
                   weekText('Fr'),
                   weekText('Sa'),
-                  weekText('Su'),
                 ],
               ),
             ),
@@ -133,6 +135,7 @@ class _DatePickerState extends State<DatePicker> {
   @override
   Widget build(BuildContext context) {
     return PagedVerticalCalendar(
+      startWeekWithSunday: true,
       addAutomaticKeepAlives: true,
       dayBuilder: (context, date) {
         // update the days color based on if it's selected or not

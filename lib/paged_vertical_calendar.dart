@@ -44,6 +44,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.scrollController,
     this.listPadding = EdgeInsets.zero,
     this.startWeekWithSunday = false,
+    this.weekdaysToHide = const [],
   }) : this.initialDate = initialDate ?? DateTime.now().removeTime();
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
@@ -100,6 +101,10 @@ class PagedVerticalCalendar extends StatefulWidget {
 
   /// Select start day of the week to be Sunday
   final bool startWeekWithSunday;
+
+  /// Hide certain Weekdays eg.Weekends by providing
+  /// `[DateTime.sunday,DateTime.monday]`. By default all weekdays are shown
+  final List<int> weekdaysToHide;
 
   @override
   _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
@@ -227,7 +232,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
   EdgeInsets _getDownListPadding() {
     final double paddingTop = hideUp ? widget.listPadding.top : 0;
-    return EdgeInsets.fromLTRB(widget.listPadding.left, paddingTop, widget.listPadding.right, widget.listPadding.bottom);
+    return EdgeInsets.fromLTRB(widget.listPadding.left, paddingTop,
+        widget.listPadding.right, widget.listPadding.bottom);
   }
 
   @override
@@ -242,40 +248,43 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
           slivers: [
             if (!hideUp)
               SliverPadding(
-                padding: EdgeInsets.fromLTRB(widget.listPadding.left, widget.listPadding.top, widget.listPadding.right, 0),
+                padding: EdgeInsets.fromLTRB(widget.listPadding.left,
+                    widget.listPadding.top, widget.listPadding.right, 0),
                 sliver: PagedSliverList(
                   pagingController: _pagingReplyUpController,
                   builderDelegate: PagedChildBuilderDelegate<Month>(
-                    itemBuilder: (BuildContext context, Month month, int index) {
+                    itemBuilder:
+                        (BuildContext context, Month month, int index) {
                       return _MonthView(
                         month: month,
                         monthBuilder: widget.monthBuilder,
                         dayBuilder: widget.dayBuilder,
                         onDayPressed: widget.onDayPressed,
                         startWeekWithSunday: widget.startWeekWithSunday,
+                        weekDaysToHide: widget.weekdaysToHide,
                       );
                     },
                   ),
                 ),
               ),
-              SliverPadding(
-                key: downListKey,
-                padding: _getDownListPadding(),
-                sliver: PagedSliverList(
-                  pagingController: _pagingReplyDownController,
-                  builderDelegate: PagedChildBuilderDelegate<Month>(
-                    itemBuilder: (BuildContext context, Month month, int index) {
-                      return _MonthView(
+            SliverPadding(
+              key: downListKey,
+              padding: _getDownListPadding(),
+              sliver: PagedSliverList(
+                pagingController: _pagingReplyDownController,
+                builderDelegate: PagedChildBuilderDelegate<Month>(
+                  itemBuilder: (BuildContext context, Month month, int index) {
+                    return _MonthView(
                         month: month,
                         monthBuilder: widget.monthBuilder,
                         dayBuilder: widget.dayBuilder,
                         onDayPressed: widget.onDayPressed,
                         startWeekWithSunday: widget.startWeekWithSunday,
-                      );
-                    },
-                  ),
+                        weekDaysToHide: widget.weekdaysToHide);
+                  },
                 ),
               ),
+            ),
           ],
         );
       },
@@ -296,6 +305,7 @@ class _MonthView extends StatelessWidget {
     this.monthBuilder,
     this.dayBuilder,
     this.onDayPressed,
+    required this.weekDaysToHide,
     required this.startWeekWithSunday,
   });
 
@@ -304,9 +314,16 @@ class _MonthView extends StatelessWidget {
   final DayBuilder? dayBuilder;
   final ValueChanged<DateTime>? onDayPressed;
   final bool startWeekWithSunday;
+  final List<int> weekDaysToHide;
 
   @override
   Widget build(BuildContext context) {
+    final validDates = DateUtils.listOfValidDatesInMonth(month, weekDaysToHide);
+    final noOfSpaceRequiredBeforeFirstValidDate =
+        DateUtils.getNoOfSpaceRequiredBeforeFirstValidDate(
+            weekDaysToHide,
+            validDates.isNotEmpty ? validDates.first.weekday : 0,
+            startWeekWithSunday);
     return Column(
       children: <Widget>[
         /// display the default month header if none is provided
@@ -315,52 +332,35 @@ class _MonthView extends StatelessWidget {
               month: month.month,
               year: month.year,
             ),
-        Table(
-          children: month.weeks.map((Week week) {
-            return _generateWeekRow(context, week, startWeekWithSunday);
-          }).toList(growable: false),
-        ),
+        GridView.builder(
+            addRepaintBoundaries: false,
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: DateTime.daysPerWeek - weekDaysToHide.length),
+            itemCount:
+                validDates.length + noOfSpaceRequiredBeforeFirstValidDate,
+            itemBuilder: (BuildContext context, int index) {
+              if (index < noOfSpaceRequiredBeforeFirstValidDate) {
+                return SizedBox();
+              }
+              final date =
+                  validDates[index - noOfSpaceRequiredBeforeFirstValidDate];
+              return AspectRatio(
+                aspectRatio: 1.0,
+                child: InkWell(
+                  onTap:
+                      onDayPressed == null ? null : () => onDayPressed!(date),
+                  child: dayBuilder?.call(context, date) ??
+                      _DefaultDayView(date: date),
+                ),
+              );
+            }),
         SizedBox(
           height: 20,
         ),
       ],
-    );
-  }
-
-  TableRow _generateWeekRow(
-      BuildContext context, Week week, bool startWeekWithSunday) {
-    DateTime firstDay = week.firstDay;
-
-    return TableRow(
-      children: List<Widget>.generate(
-        DateTime.daysPerWeek,
-        (int position) {
-          DateTime day = DateTime(
-            week.firstDay.year,
-            week.firstDay.month,
-            firstDay.day +
-                (position -
-                    (DateUtils.getWeekDay(firstDay, startWeekWithSunday) - 1)),
-          );
-
-          if ((position + 1) <
-                  DateUtils.getWeekDay(week.firstDay, startWeekWithSunday) ||
-              (position + 1) >
-                  DateUtils.getWeekDay(week.lastDay, startWeekWithSunday)) {
-            return const SizedBox();
-          } else {
-            return AspectRatio(
-              aspectRatio: 1.0,
-              child: InkWell(
-                onTap: onDayPressed == null ? null : () => onDayPressed!(day),
-                child: dayBuilder?.call(context, day) ??
-                    _DefaultDayView(date: day),
-              ),
-            );
-          }
-        },
-        growable: false,
-      ),
     );
   }
 }
