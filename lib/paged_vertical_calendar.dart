@@ -232,7 +232,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
   EdgeInsets _getDownListPadding() {
     final double paddingTop = hideUp ? widget.listPadding.top : 0;
-    return EdgeInsets.fromLTRB(widget.listPadding.left, paddingTop, widget.listPadding.right, widget.listPadding.bottom);
+    return EdgeInsets.fromLTRB(widget.listPadding.left, paddingTop,
+        widget.listPadding.right, widget.listPadding.bottom);
   }
 
   @override
@@ -247,11 +248,13 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
           slivers: [
             if (!hideUp)
               SliverPadding(
-                padding: EdgeInsets.fromLTRB(widget.listPadding.left, widget.listPadding.top, widget.listPadding.right, 0),
+                padding: EdgeInsets.fromLTRB(widget.listPadding.left,
+                    widget.listPadding.top, widget.listPadding.right, 0),
                 sliver: PagedSliverList(
                   pagingController: _pagingReplyUpController,
                   builderDelegate: PagedChildBuilderDelegate<Month>(
-                    itemBuilder: (BuildContext context, Month month, int index) {
+                    itemBuilder:
+                        (BuildContext context, Month month, int index) {
                       return _MonthView(
                         month: month,
                         monthBuilder: widget.monthBuilder,
@@ -259,29 +262,29 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                         onDayPressed: widget.onDayPressed,
                         startWeekWithSunday: widget.startWeekWithSunday,
                         weekDaysToHide: widget.weekdaysToHide,
-                    );
+                      );
                     },
                   ),
                 ),
               ),
-              SliverPadding(
-                key: downListKey,
-                padding: _getDownListPadding(),
-                sliver: PagedSliverList(
-                  pagingController: _pagingReplyDownController,
-                  builderDelegate: PagedChildBuilderDelegate<Month>(
-                    itemBuilder: (BuildContext context, Month month, int index) {
-                      return _MonthView(
-                          month: month,
-                          monthBuilder: widget.monthBuilder,
-                          dayBuilder: widget.dayBuilder,
-                          onDayPressed: widget.onDayPressed,
-                          startWeekWithSunday: widget.startWeekWithSunday,
-                          weekDaysToHide: widget.weekdaysToHide);
-                    },
-                  ),
+            SliverPadding(
+              key: downListKey,
+              padding: _getDownListPadding(),
+              sliver: PagedSliverList(
+                pagingController: _pagingReplyDownController,
+                builderDelegate: PagedChildBuilderDelegate<Month>(
+                  itemBuilder: (BuildContext context, Month month, int index) {
+                    return _MonthView(
+                        month: month,
+                        monthBuilder: widget.monthBuilder,
+                        dayBuilder: widget.dayBuilder,
+                        onDayPressed: widget.onDayPressed,
+                        startWeekWithSunday: widget.startWeekWithSunday,
+                        weekDaysToHide: widget.weekdaysToHide);
+                  },
                 ),
               ),
+            ),
           ],
         );
       },
