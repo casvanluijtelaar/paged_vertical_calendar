@@ -4,14 +4,14 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:paged_vertical_calendar/utils/date_models.dart';
 import 'package:paged_vertical_calendar/utils/date_utils.dart';
 
-/// enum indicating the pagination enpoint direction
+/// enum indicating the pagination end point direction
 enum PaginationDirection {
   up,
   down,
 }
 
 /// a minimalistic paginated calendar widget providing infinite customisation
-/// options and usefull paginated callbacks. all paremeters are optional.
+/// options and useful paginated callbacks. all parameters are optional.
 ///
 /// ```
 /// PagedVerticalCalendar(
@@ -56,7 +56,7 @@ class PagedVerticalCalendar extends StatefulWidget {
   final DateTime? maxDate;
 
   /// the initial date displayed by the calendar.
-  /// if inititial date is nulll, the start date will be used
+  /// if initial date is null, the start date will be used
   final DateTime initialDate;
 
   /// a Builder used for month header generation. a default [MonthBuilder] is
@@ -111,15 +111,30 @@ class PagedVerticalCalendar extends StatefulWidget {
 }
 
 class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
+
+  DateTime? selected;
+
   late PagingController<int, Month> _pagingReplyUpController;
   late PagingController<int, Month> _pagingReplyDownController;
 
   final Key downListKey = UniqueKey();
   late bool hideUp;
 
+  void dateSelected(DateTime aDateTime) {
+    if (widget.onDayPressed != null) {
+      widget.onDayPressed!(aDateTime);
+    }
+    setState(() {
+      selected = aDateTime;
+    });
+  }
+
+
   @override
   void initState() {
     super.initState();
+
+    selected = widget.initialDate;
 
     if (widget.minDate != null &&
         widget.initialDate.isBefore(widget.minDate!)) {
@@ -259,9 +274,10 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                         month: month,
                         monthBuilder: widget.monthBuilder,
                         dayBuilder: widget.dayBuilder,
-                        onDayPressed: widget.onDayPressed,
+                        onDayPressed: dateSelected,
                         startWeekWithSunday: widget.startWeekWithSunday,
                         weekDaysToHide: widget.weekdaysToHide,
+                        selected: selected
                       );
                     },
                   ),
@@ -278,9 +294,10 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                         month: month,
                         monthBuilder: widget.monthBuilder,
                         dayBuilder: widget.dayBuilder,
-                        onDayPressed: widget.onDayPressed,
+                        onDayPressed: dateSelected,
                         startWeekWithSunday: widget.startWeekWithSunday,
-                        weekDaysToHide: widget.weekdaysToHide);
+                        weekDaysToHide: widget.weekdaysToHide,
+                        selected: selected);
                   },
                 ),
               ),
@@ -307,6 +324,7 @@ class _MonthView extends StatelessWidget {
     this.onDayPressed,
     required this.weekDaysToHide,
     required this.startWeekWithSunday,
+    this.selected
   });
 
   final Month month;
@@ -315,6 +333,7 @@ class _MonthView extends StatelessWidget {
   final ValueChanged<DateTime>? onDayPressed;
   final bool startWeekWithSunday;
   final List<int> weekDaysToHide;
+  final DateTime? selected;
 
   @override
   Widget build(BuildContext context) {
@@ -351,7 +370,7 @@ class _MonthView extends StatelessWidget {
               aspectRatio: 1.0,
               child: InkWell(
                 onTap: onDayPressed == null ? null : () => onDayPressed!(date),
-                child: dayBuilder?.call(context, date) ??
+                child: dayBuilder?.call(context, date, selected) ??
                     _DefaultDayView(date: date),
               ),
             );
@@ -411,8 +430,8 @@ class _DefaultDayView extends StatelessWidget {
   }
 }
 
-typedef MonthBuilder = Widget Function(
-    BuildContext context, int month, int year);
-typedef DayBuilder = Widget Function(BuildContext context, DateTime date);
+typedef MonthBuilder = Widget Function(BuildContext context, int month, int year);
+
+typedef DayBuilder = Widget Function(BuildContext context, DateTime date, DateTime? selected);
 
 typedef OnMonthLoaded = void Function(int year, int month);
