@@ -184,7 +184,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   void _fetchUpPage(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
-        DateTime(widget.initialDate.year, widget.initialDate.month - (1 * (widget.reverse ? -1 : 1)), 1),
+        DateTime(widget.initialDate.year,
+            widget.initialDate.month - (1 * (widget.reverse ? -1 : 1)), 1),
         widget.minDate,
         pageKey,
         !widget.reverse,

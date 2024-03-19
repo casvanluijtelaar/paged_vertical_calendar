@@ -147,7 +147,6 @@ abstract class DateUtils {
     Month month,
     List<int> weekdaysToHide,
   ) {
-
     final totalDays = month.daysInMonth;
     final validDates = <DateTime>[];
     for (int i = 1; i <= totalDays; i++) {
@@ -159,7 +158,7 @@ abstract class DateUtils {
     return (validDates);
   }
 
-  /// This method returns the number of spaces required before first valid based of the hidden weekdays. 
+  /// This method returns the number of spaces required before first valid based of the hidden weekdays.
   /// For example, if the first valid date falls on a Tuesday, that means that the weekday "monday"
   /// is hidden, which makes the first valid date index "1"
   static int getNoOfSpaceRequiredBeforeFirstValidDate(
