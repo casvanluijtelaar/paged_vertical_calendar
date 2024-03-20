@@ -45,6 +45,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.listPadding = EdgeInsets.zero,
     this.startWeekWithSunday = false,
     this.weekdaysToHide = const [],
+    this.reverse = false,
   }) : this.initialDate = initialDate ?? DateTime.now().removeTime();
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
@@ -105,6 +106,14 @@ class PagedVerticalCalendar extends StatefulWidget {
   /// Hide certain Weekdays eg.Weekends by providing
   /// `[DateTime.sunday,DateTime.monday]`. By default all weekdays are shown
   final List<int> weekdaysToHide;
+
+  /// Whether the calendar scrolls in the reading direction.
+  ///
+  /// For example the scroll view scrolls from top to bottom when [reverse]
+  /// is false and from bottom to top when [reverse] is true.
+  ///
+  /// Defaults to false.
+  final bool reverse;
 
   @override
   _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
@@ -175,10 +184,11 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   void _fetchUpPage(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
-        DateTime(widget.initialDate.year, widget.initialDate.month - 1, 1),
+        DateTime(widget.initialDate.year,
+            widget.initialDate.month - (1 * (widget.reverse ? -1 : 1)), 1),
         widget.minDate,
         pageKey,
-        true,
+        !widget.reverse,
         startWeekWithSunday: widget.startWeekWithSunday,
       );
 
@@ -207,7 +217,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
         DateTime(widget.initialDate.year, widget.initialDate.month, 1),
         widget.maxDate,
         pageKey,
-        false,
+        widget.reverse,
         startWeekWithSunday: widget.startWeekWithSunday,
       );
 

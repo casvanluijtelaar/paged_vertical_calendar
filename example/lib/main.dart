@@ -43,6 +43,7 @@ class Custom extends StatelessWidget {
   Widget build(BuildContext context) {
     return PagedVerticalCalendar(
       startWeekWithSunday: true,
+
       /// customize the month header look by adding a week indicator
       monthBuilder: (context, month, year) {
         return Column(
