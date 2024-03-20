@@ -1,5 +1,14 @@
+## 1.1.7
+* Added reverse order capability. Thanks to [AngeloAvv](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/43)
+
+## 1.1.6
+* Hide Weekdays by providing weekdaysToHide. Thanks to [Bikram-Shrestha](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/34)
+* ignore time when adding days. Thanks to [Snorlax8](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/35)
+* add optional padding parameter to calendar. Thanks to [Snorlax8](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/36)
+
 ## 1.1.5
 * fix potential infinite loader when minDate & initialDate are in the same month
+
 ## 1.1.4
 * reimplement ScrollPhysics after it was removed by 1.0.6
 
