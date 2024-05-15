@@ -1,3 +1,6 @@
+## 1.1.8
+* bump version and dependency. Thanks to [Diaglyonok](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/45)
+
 ## 1.1.7
 * Added reverse order capability. Thanks to [AngeloAvv](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/43)
 
