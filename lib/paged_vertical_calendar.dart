@@ -46,6 +46,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     this.startWeekWithSunday = false,
     this.weekdaysToHide = const [],
     this.reverse = false,
+    this.dayAspectRatio = 1,
   }) : this.initialDate = initialDate ?? DateTime.now().removeTime();
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
@@ -114,6 +115,13 @@ class PagedVerticalCalendar extends StatefulWidget {
   ///
   /// Defaults to false.
   final bool reverse;
+
+  /// Each [dayBuilder] aspect ratio
+  ///
+  /// Value: width / height
+  ///
+  /// Default is 1
+  final double dayAspectRatio;
 
   @override
   _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
@@ -272,6 +280,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                         onDayPressed: widget.onDayPressed,
                         startWeekWithSunday: widget.startWeekWithSunday,
                         weekDaysToHide: widget.weekdaysToHide,
+                        dayAspectRatio: widget.dayAspectRatio,
                       );
                     },
                   ),
@@ -285,12 +294,14 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                 builderDelegate: PagedChildBuilderDelegate<Month>(
                   itemBuilder: (BuildContext context, Month month, int index) {
                     return _MonthView(
-                        month: month,
-                        monthBuilder: widget.monthBuilder,
-                        dayBuilder: widget.dayBuilder,
-                        onDayPressed: widget.onDayPressed,
-                        startWeekWithSunday: widget.startWeekWithSunday,
-                        weekDaysToHide: widget.weekdaysToHide);
+                      month: month,
+                      monthBuilder: widget.monthBuilder,
+                      dayBuilder: widget.dayBuilder,
+                      onDayPressed: widget.onDayPressed,
+                      startWeekWithSunday: widget.startWeekWithSunday,
+                      weekDaysToHide: widget.weekdaysToHide,
+                      dayAspectRatio: widget.dayAspectRatio,
+                    );
                   },
                 ),
               ),
@@ -317,6 +328,7 @@ class _MonthView extends StatelessWidget {
     this.onDayPressed,
     required this.weekDaysToHide,
     required this.startWeekWithSunday,
+    this.dayAspectRatio = 1,
   });
 
   final Month month;
@@ -325,6 +337,7 @@ class _MonthView extends StatelessWidget {
   final ValueChanged<DateTime>? onDayPressed;
   final bool startWeekWithSunday;
   final List<int> weekDaysToHide;
+  final double dayAspectRatio;
 
   @override
   Widget build(BuildContext context) {
@@ -351,14 +364,16 @@ class _MonthView extends StatelessWidget {
           padding: EdgeInsets.zero,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: DateTime.daysPerWeek - weekDaysToHide.length,
+            childAspectRatio: dayAspectRatio,
           ),
           itemCount: validDates.length + blankSpaces,
           itemBuilder: (BuildContext context, int index) {
             if (index < blankSpaces) return SizedBox();
 
             final date = validDates[index - blankSpaces];
+
             return AspectRatio(
-              aspectRatio: 1.0,
+              aspectRatio: dayAspectRatio,
               child: InkWell(
                 onTap: onDayPressed == null ? null : () => onDayPressed!(date),
                 child: dayBuilder?.call(context, date) ??
