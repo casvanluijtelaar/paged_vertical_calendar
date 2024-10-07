@@ -35,6 +35,7 @@ class PagedVerticalCalendar extends StatefulWidget {
     DateTime? initialDate,
     this.monthBuilder,
     this.dayBuilder,
+    this.overlayBuilder,
     this.addAutomaticKeepAlives = false,
     this.onDayPressed,
     this.onMonthLoaded,
@@ -73,6 +74,10 @@ class PagedVerticalCalendar extends StatefulWidget {
   /// * [context]
   /// * [DateTime] date
   final DayBuilder? dayBuilder;
+
+  /// a Builder used for overlay generation. a default `SizedBox.shrink()` is
+  /// used when no custom [OverlayBuilder] is provided.
+  final OverlayBuilder? overlayBuilder;
 
   /// if the calendar should stay cached when the widget is no longer loaded.
   /// this can be used for maintaining the last state. defaults to `false`
@@ -133,6 +138,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
   final Key downListKey = UniqueKey();
   late bool hideUp;
+
+  double itemWidth = 0;
 
   @override
   void initState() {
@@ -273,14 +280,23 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                   builderDelegate: PagedChildBuilderDelegate<Month>(
                     itemBuilder:
                         (BuildContext context, Month month, int index) {
-                      return _MonthView(
-                        month: month,
-                        monthBuilder: widget.monthBuilder,
-                        dayBuilder: widget.dayBuilder,
-                        onDayPressed: widget.onDayPressed,
-                        startWeekWithSunday: widget.startWeekWithSunday,
-                        weekDaysToHide: widget.weekdaysToHide,
-                        dayAspectRatio: widget.dayAspectRatio,
+                      final weeksInMonth =
+                          getWeekCountInMonth(month.year, month.month);
+                      return Stack(
+                        children: [
+                          _MonthView(
+                            month: month,
+                            monthBuilder: widget.monthBuilder,
+                            dayBuilder: widget.dayBuilder,
+                            onDayPressed: widget.onDayPressed,
+                            startWeekWithSunday: widget.startWeekWithSunday,
+                            weekDaysToHide: widget.weekdaysToHide,
+                            dayAspectRatio: widget.dayAspectRatio,
+                          ),
+                          widget.overlayBuilder?.call(context, itemWidth,
+                                  weeksInMonth, month.month, month.year) ??
+                              SizedBox.shrink(),
+                        ],
                       );
                     },
                   ),
@@ -293,14 +309,23 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                 pagingController: _pagingReplyDownController,
                 builderDelegate: PagedChildBuilderDelegate<Month>(
                   itemBuilder: (BuildContext context, Month month, int index) {
-                    return _MonthView(
-                      month: month,
-                      monthBuilder: widget.monthBuilder,
-                      dayBuilder: widget.dayBuilder,
-                      onDayPressed: widget.onDayPressed,
-                      startWeekWithSunday: widget.startWeekWithSunday,
-                      weekDaysToHide: widget.weekdaysToHide,
-                      dayAspectRatio: widget.dayAspectRatio,
+                    final weeksInMonth =
+                        getWeekCountInMonth(month.year, month.month);
+                    return Stack(
+                      children: [
+                        _MonthView(
+                          month: month,
+                          monthBuilder: widget.monthBuilder,
+                          dayBuilder: widget.dayBuilder,
+                          onDayPressed: widget.onDayPressed,
+                          startWeekWithSunday: widget.startWeekWithSunday,
+                          weekDaysToHide: widget.weekdaysToHide,
+                          dayAspectRatio: widget.dayAspectRatio,
+                        ),
+                        widget.overlayBuilder?.call(context, itemWidth,
+                                weeksInMonth, month.month, month.year) ??
+                            SizedBox.shrink(),
+                      ],
                     );
                   },
                 ),
@@ -310,6 +335,27 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
         );
       },
     );
+  }
+
+  void updateWidth(double width) {
+    if (width == itemWidth) return;
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => setState(() => itemWidth = width));
+  }
+
+  int getWeekCountInMonth(int year, int month) {
+    final firstDayOfMonth = DateTime(year, month);
+    final lastDayOfMonth = DateTime(year, month + 1, 0);
+
+    int firstWeekday = firstDayOfMonth.weekday % 7;
+    if (firstWeekday == 0) firstWeekday = 7;
+
+    int daysInMonth = lastDayOfMonth.day;
+
+    int totalDays = firstWeekday - 1 + daysInMonth;
+    int weeks = (totalDays / 7).ceil();
+
+    return weeks;
   }
 
   @override
@@ -326,6 +372,7 @@ class _MonthView extends StatelessWidget {
     this.monthBuilder,
     this.dayBuilder,
     this.onDayPressed,
+    this.onWidthChanged,
     required this.weekDaysToHide,
     required this.startWeekWithSunday,
     this.dayAspectRatio = 1,
@@ -335,6 +382,7 @@ class _MonthView extends StatelessWidget {
   final MonthBuilder? monthBuilder;
   final DayBuilder? dayBuilder;
   final ValueChanged<DateTime>? onDayPressed;
+  final ValueChanged<double>? onWidthChanged;
   final bool startWeekWithSunday;
   final List<int> weekDaysToHide;
   final double dayAspectRatio;
@@ -368,17 +416,23 @@ class _MonthView extends StatelessWidget {
           ),
           itemCount: validDates.length + blankSpaces,
           itemBuilder: (BuildContext context, int index) {
-            if (index < blankSpaces) return SizedBox();
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                onWidthChanged?.call(constraints.maxWidth);
+                if (index < blankSpaces) return SizedBox();
 
-            final date = validDates[index - blankSpaces];
+                final date = validDates[index - blankSpaces];
 
-            return AspectRatio(
-              aspectRatio: dayAspectRatio,
-              child: InkWell(
-                onTap: onDayPressed == null ? null : () => onDayPressed!(date),
-                child: dayBuilder?.call(context, date) ??
-                    _DefaultDayView(date: date),
-              ),
+                return AspectRatio(
+                  aspectRatio: dayAspectRatio,
+                  child: InkWell(
+                    onTap:
+                        onDayPressed == null ? null : () => onDayPressed!(date),
+                    child: dayBuilder?.call(context, date) ??
+                        _DefaultDayView(date: date),
+                  ),
+                );
+              },
             );
           },
         ),
@@ -439,5 +493,7 @@ class _DefaultDayView extends StatelessWidget {
 typedef MonthBuilder = Widget Function(
     BuildContext context, int month, int year);
 typedef DayBuilder = Widget Function(BuildContext context, DateTime date);
+typedef OverlayBuilder = Widget Function(BuildContext context, double itemWidth,
+    int weeksCountInMonth, int month, int year);
 
 typedef OnMonthLoaded = void Function(int year, int month);
