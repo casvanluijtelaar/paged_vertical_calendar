@@ -63,6 +63,7 @@ PagedVerticalCalendar(
 
 * Finally when a `minDate` or `maxDate` is provided to the `PagedVerticalCalendar`, the `onPaginationCompleted` callback can be used. it will return a `PaginationDirection` to indicate what side of the calendar has been reached.
 
+* and many many more, see the docs!!!
 
 
 
