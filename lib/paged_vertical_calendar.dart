@@ -138,8 +138,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   void initState() {
     super.initState();
 
-    if (widget.minDate != null &&
-        widget.initialDate.isBefore(widget.minDate!)) {
+    if (widget.minDate != null && widget.initialDate.isBefore(widget.minDate!)) {
       throw ArgumentError("initialDate cannot be before minDate");
     }
 
@@ -147,22 +146,29 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       throw ArgumentError("initialDate cannot be after maxDate");
     }
 
-    hideUp = !(widget.minDate == null ||
-        !widget.minDate!.isSameMonth(widget.initialDate));
+    hideUp = !(widget.minDate == null || !widget.minDate!.isSameMonth(widget.initialDate));
 
     _pagingReplyUpController = PagingController<int, Month>(
-      firstPageKey: 0,
-      invisibleItemsThreshold: widget.invisibleMonthsThreshold,
+      getNextPageKey: (state) {
+        if (state.lastPageIsEmpty) {
+          widget.onPaginationCompleted?.call(PaginationDirection.up);
+          return null;
+        }
+        return state.nextIntPageKey;
+      },
+      fetchPage: _fetchUpPage,
     );
-    _pagingReplyUpController.addPageRequestListener(_fetchUpPage);
-    _pagingReplyUpController.addStatusListener(paginationStatusUp);
 
     _pagingReplyDownController = PagingController<int, Month>(
-      firstPageKey: 0,
-      invisibleItemsThreshold: widget.invisibleMonthsThreshold,
+      getNextPageKey: (state) {
+        if (state.lastPageIsEmpty) {
+          widget.onPaginationCompleted?.call(PaginationDirection.down);
+          return null;
+        }
+        return state.nextIntPageKey;
+      },
+      fetchPage: _fetchDownPage,
     );
-    _pagingReplyDownController.addPageRequestListener(_fetchDownPage);
-    _pagingReplyDownController.addStatusListener(paginationStatusDown);
   }
 
   @override
@@ -172,28 +178,17 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     if (widget.minDate != oldWidget.minDate) {
       _pagingReplyUpController.refresh();
 
-      hideUp = !(widget.minDate == null ||
-          !widget.minDate!.isSameMonth(widget.initialDate));
+      hideUp = !(widget.minDate == null || !widget.minDate!.isSameMonth(widget.initialDate));
     }
-  }
-
-  void paginationStatusUp(PagingStatus state) {
-    if (state == PagingStatus.completed)
-      return widget.onPaginationCompleted?.call(PaginationDirection.up);
-  }
-
-  void paginationStatusDown(PagingStatus state) {
-    if (state == PagingStatus.completed)
-      return widget.onPaginationCompleted?.call(PaginationDirection.down);
   }
 
   /// fetch a new [Month] object based on the [pageKey] which is the Nth month
   /// from the start date
-  void _fetchUpPage(int pageKey) async {
+  Future<List<Month>> _fetchUpPage(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
-        DateTime(widget.initialDate.year,
-            widget.initialDate.month - (1 * (widget.reverse ? -1 : 1)), 1),
+        DateTime(
+            widget.initialDate.year, widget.initialDate.month - (1 * (widget.reverse ? -1 : 1)), 1),
         widget.minDate,
         pageKey,
         !widget.reverse,
@@ -205,24 +200,23 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       );
 
       final newItems = [month];
-      final isLastPage = widget.minDate != null &&
-          widget.minDate!.isSameDayOrAfter(month.weeks.first.firstDay);
+      final isLastPage =
+          widget.minDate != null && widget.minDate!.isSameDayOrAfter(month.weeks.first.firstDay);
 
       if (isLastPage) {
-        return _pagingReplyUpController.appendLastPage(newItems);
+        return newItems;
       }
 
-      final nextPageKey = pageKey + newItems.length;
-      _pagingReplyUpController.appendPage(newItems, nextPageKey);
-    } catch (_) {
-      _pagingReplyUpController.error;
+      return newItems;
+    } catch (error) {
+      throw error;
     }
   }
 
-  void _fetchDownPage(int pageKey) async {
+  Future<List<Month>> _fetchDownPage(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
-        DateTime(widget.initialDate.year, widget.initialDate.month, 1),
+        widget.initialDate,
         widget.maxDate,
         pageKey,
         widget.reverse,
@@ -234,24 +228,23 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       );
 
       final newItems = [month];
-      final isLastPage = widget.maxDate != null &&
-          widget.maxDate!.isSameDayOrBefore(month.weeks.last.lastDay);
+      final isLastPage =
+          widget.maxDate != null && widget.maxDate!.isSameDayOrBefore(month.weeks.last.lastDay);
 
       if (isLastPage) {
-        return _pagingReplyDownController.appendLastPage(newItems);
+        return newItems;
       }
 
-      final nextPageKey = pageKey + newItems.length;
-      _pagingReplyDownController.appendPage(newItems, nextPageKey);
-    } catch (_) {
-      _pagingReplyDownController.error;
+      return newItems;
+    } catch (error) {
+      throw error;
     }
   }
 
   EdgeInsets _getDownListPadding() {
     final double paddingTop = hideUp ? widget.listPadding.top : 0;
-    return EdgeInsets.fromLTRB(widget.listPadding.left, paddingTop,
-        widget.listPadding.right, widget.listPadding.bottom);
+    return EdgeInsets.fromLTRB(
+        widget.listPadding.left, paddingTop, widget.listPadding.right, widget.listPadding.bottom);
   }
 
   @override
@@ -266,13 +259,41 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
           slivers: [
             if (!hideUp)
               SliverPadding(
-                padding: EdgeInsets.fromLTRB(widget.listPadding.left,
-                    widget.listPadding.top, widget.listPadding.right, 0),
-                sliver: PagedSliverList(
-                  pagingController: _pagingReplyUpController,
+                padding: EdgeInsets.fromLTRB(
+                    widget.listPadding.left, widget.listPadding.top, widget.listPadding.right, 0),
+                sliver: PagingListener<int, Month>(
+                  controller: _pagingReplyUpController,
+                  builder: (context, state, fetchNextPage) => PagedSliverList(
+                    state: state,
+                    fetchNextPage: fetchNextPage,
+                    builderDelegate: PagedChildBuilderDelegate<Month>(
+                      invisibleItemsThreshold: widget.invisibleMonthsThreshold,
+                      itemBuilder: (BuildContext context, Month month, int index) {
+                        return _MonthView(
+                          month: month,
+                          monthBuilder: widget.monthBuilder,
+                          dayBuilder: widget.dayBuilder,
+                          onDayPressed: widget.onDayPressed,
+                          startWeekWithSunday: widget.startWeekWithSunday,
+                          weekDaysToHide: widget.weekdaysToHide,
+                          dayAspectRatio: widget.dayAspectRatio,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            SliverPadding(
+              key: downListKey,
+              padding: _getDownListPadding(),
+              sliver: PagingListener<int, Month>(
+                controller: _pagingReplyDownController,
+                builder: (context, state, fetchNextPage) => PagedSliverList(
+                  state: state,
+                  fetchNextPage: fetchNextPage,
                   builderDelegate: PagedChildBuilderDelegate<Month>(
-                    itemBuilder:
-                        (BuildContext context, Month month, int index) {
+                    invisibleItemsThreshold: widget.invisibleMonthsThreshold,
+                    itemBuilder: (BuildContext context, Month month, int index) {
                       return _MonthView(
                         month: month,
                         monthBuilder: widget.monthBuilder,
@@ -284,25 +305,6 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                       );
                     },
                   ),
-                ),
-              ),
-            SliverPadding(
-              key: downListKey,
-              padding: _getDownListPadding(),
-              sliver: PagedSliverList(
-                pagingController: _pagingReplyDownController,
-                builderDelegate: PagedChildBuilderDelegate<Month>(
-                  itemBuilder: (BuildContext context, Month month, int index) {
-                    return _MonthView(
-                      month: month,
-                      monthBuilder: widget.monthBuilder,
-                      dayBuilder: widget.dayBuilder,
-                      onDayPressed: widget.onDayPressed,
-                      startWeekWithSunday: widget.startWeekWithSunday,
-                      weekDaysToHide: widget.weekdaysToHide,
-                      dayAspectRatio: widget.dayAspectRatio,
-                    );
-                  },
                 ),
               ),
             ),
@@ -376,8 +378,7 @@ class _MonthView extends StatelessWidget {
               aspectRatio: dayAspectRatio,
               child: InkWell(
                 onTap: onDayPressed == null ? null : () => onDayPressed!(date),
-                child: dayBuilder?.call(context, date) ??
-                    _DefaultDayView(date: date),
+                child: dayBuilder?.call(context, date) ?? _DefaultDayView(date: date),
               ),
             );
           },
@@ -436,8 +437,7 @@ class _DefaultDayView extends StatelessWidget {
   }
 }
 
-typedef MonthBuilder = Widget Function(
-    BuildContext context, int month, int year);
+typedef MonthBuilder = Widget Function(BuildContext context, int month, int year);
 typedef DayBuilder = Widget Function(BuildContext context, DateTime date);
 
 typedef OnMonthLoaded = void Function(int year, int month);
