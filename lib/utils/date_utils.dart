@@ -14,13 +14,14 @@ abstract class DateUtils {
 
     // if this is not the first month in this calendar then calculate a new
     // start date for this month
-    if (monthPage > 0) {
+    if (monthPage > 1) {
+      final offset = monthPage - 1;
       if (up) {
-        // fetsch up: month will be subtructed
-        startDate = DateTime(startDate.year, startDate.month - monthPage, 1);
+        // fetch up: month will be subtracted
+        startDate = DateTime(startDate.year, startDate.month - offset, 1);
       } else {
         // fetch down: month will be added
-        startDate = DateTime(startDate.year, startDate.month + monthPage, 1);
+        startDate = DateTime(startDate.year, startDate.month + offset, 1);
       }
     }
 
