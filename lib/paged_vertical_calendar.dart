@@ -150,7 +150,11 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
     _pagingReplyUpController = PagingController<int, Month>(
       getNextPageKey: (state) {
-        if (state.lastPageIsEmpty) {
+        final lastMonth = state.items?.last;
+        final isLastPage = widget.minDate != null &&
+            lastMonth != null &&
+            widget.minDate!.isSameDayOrAfter(lastMonth.weeks.first.firstDay);
+        if (isLastPage) {
           widget.onPaginationCompleted?.call(PaginationDirection.up);
           return null;
         }
@@ -161,7 +165,14 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
     _pagingReplyDownController = PagingController<int, Month>(
       getNextPageKey: (state) {
-        if (state.lastPageIsEmpty) {
+        final lastMonth = state.items?.last;
+
+        // Detect if this is the last page using maxDate
+        final isLastPage = lastMonth != null &&
+            widget.maxDate != null &&
+            widget.maxDate!.isSameDayOrBefore(lastMonth.weeks.last.lastDay);
+
+        if (isLastPage) {
           widget.onPaginationCompleted?.call(PaginationDirection.down);
           return null;
         }
@@ -196,18 +207,10 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       );
 
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => widget.onMonthLoaded?.call(month.year, month.month),
+            (_) => widget.onMonthLoaded?.call(month.year, month.month),
       );
 
-      final newItems = [month];
-      final isLastPage =
-          widget.minDate != null && widget.minDate!.isSameDayOrAfter(month.weeks.first.firstDay);
-
-      if (isLastPage) {
-        return newItems;
-      }
-
-      return newItems;
+      return [month];
     } catch (error) {
       throw error;
     }
@@ -224,18 +227,10 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       );
 
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => widget.onMonthLoaded?.call(month.year, month.month),
+            (_) => widget.onMonthLoaded?.call(month.year, month.month),
       );
 
-      final newItems = [month];
-      final isLastPage =
-          widget.maxDate != null && widget.maxDate!.isSameDayOrBefore(month.weeks.last.lastDay);
-
-      if (isLastPage) {
-        return newItems;
-      }
-
-      return newItems;
+      return [month];
     } catch (error) {
       throw error;
     }
