@@ -1,3 +1,6 @@
+## 1.1.10
+* bump dependencies to new major versions. Thanks to [ahmeddhus](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/50)
+
 ## 1.1.9
 * add aspect ratio to day widget. Thanks to [kedulu](https://github.com/casvanluijtelaar/paged_vertical_calendar/pull/47)
 
