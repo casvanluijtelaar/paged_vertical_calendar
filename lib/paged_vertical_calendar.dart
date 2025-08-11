@@ -138,7 +138,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   void initState() {
     super.initState();
 
-    if (widget.minDate != null && widget.initialDate.isBefore(widget.minDate!)) {
+    if (widget.minDate != null &&
+        widget.initialDate.isBefore(widget.minDate!)) {
       throw ArgumentError("initialDate cannot be before minDate");
     }
 
@@ -146,7 +147,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       throw ArgumentError("initialDate cannot be after maxDate");
     }
 
-    hideUp = !(widget.minDate == null || !widget.minDate!.isSameMonth(widget.initialDate));
+    hideUp = !(widget.minDate == null ||
+        !widget.minDate!.isSameMonth(widget.initialDate));
 
     _pagingReplyUpController = PagingController<int, Month>(
       getNextPageKey: (state) {
@@ -189,7 +191,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
     if (widget.minDate != oldWidget.minDate) {
       _pagingReplyUpController.refresh();
 
-      hideUp = !(widget.minDate == null || !widget.minDate!.isSameMonth(widget.initialDate));
+      hideUp = !(widget.minDate == null ||
+          !widget.minDate!.isSameMonth(widget.initialDate));
     }
   }
 
@@ -198,8 +201,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
   Future<List<Month>> _fetchUpPage(int pageKey) async {
     try {
       final month = DateUtils.getMonth(
-        DateTime(
-            widget.initialDate.year, widget.initialDate.month - (1 * (widget.reverse ? -1 : 1)), 1),
+        DateTime(widget.initialDate.year,
+            widget.initialDate.month - (1 * (widget.reverse ? -1 : 1)), 1),
         widget.minDate,
         pageKey,
         !widget.reverse,
@@ -207,7 +210,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       );
 
       WidgetsBinding.instance.addPostFrameCallback(
-            (_) => widget.onMonthLoaded?.call(month.year, month.month),
+        (_) => widget.onMonthLoaded?.call(month.year, month.month),
       );
 
       return [month];
@@ -227,7 +230,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
       );
 
       WidgetsBinding.instance.addPostFrameCallback(
-            (_) => widget.onMonthLoaded?.call(month.year, month.month),
+        (_) => widget.onMonthLoaded?.call(month.year, month.month),
       );
 
       return [month];
@@ -238,8 +241,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
   EdgeInsets _getDownListPadding() {
     final double paddingTop = hideUp ? widget.listPadding.top : 0;
-    return EdgeInsets.fromLTRB(
-        widget.listPadding.left, paddingTop, widget.listPadding.right, widget.listPadding.bottom);
+    return EdgeInsets.fromLTRB(widget.listPadding.left, paddingTop,
+        widget.listPadding.right, widget.listPadding.bottom);
   }
 
   @override
@@ -254,8 +257,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
           slivers: [
             if (!hideUp)
               SliverPadding(
-                padding: EdgeInsets.fromLTRB(
-                    widget.listPadding.left, widget.listPadding.top, widget.listPadding.right, 0),
+                padding: EdgeInsets.fromLTRB(widget.listPadding.left,
+                    widget.listPadding.top, widget.listPadding.right, 0),
                 sliver: PagingListener<int, Month>(
                   controller: _pagingReplyUpController,
                   builder: (context, state, fetchNextPage) => PagedSliverList(
@@ -263,7 +266,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                     fetchNextPage: fetchNextPage,
                     builderDelegate: PagedChildBuilderDelegate<Month>(
                       invisibleItemsThreshold: widget.invisibleMonthsThreshold,
-                      itemBuilder: (BuildContext context, Month month, int index) {
+                      itemBuilder:
+                          (BuildContext context, Month month, int index) {
                         return _MonthView(
                           month: month,
                           monthBuilder: widget.monthBuilder,
@@ -288,7 +292,8 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
                   fetchNextPage: fetchNextPage,
                   builderDelegate: PagedChildBuilderDelegate<Month>(
                     invisibleItemsThreshold: widget.invisibleMonthsThreshold,
-                    itemBuilder: (BuildContext context, Month month, int index) {
+                    itemBuilder:
+                        (BuildContext context, Month month, int index) {
                       return _MonthView(
                         month: month,
                         monthBuilder: widget.monthBuilder,
@@ -373,7 +378,8 @@ class _MonthView extends StatelessWidget {
               aspectRatio: dayAspectRatio,
               child: InkWell(
                 onTap: onDayPressed == null ? null : () => onDayPressed!(date),
-                child: dayBuilder?.call(context, date) ?? _DefaultDayView(date: date),
+                child: dayBuilder?.call(context, date) ??
+                    _DefaultDayView(date: date),
               ),
             );
           },
@@ -432,7 +438,8 @@ class _DefaultDayView extends StatelessWidget {
   }
 }
 
-typedef MonthBuilder = Widget Function(BuildContext context, int month, int year);
+typedef MonthBuilder = Widget Function(
+    BuildContext context, int month, int year);
 typedef DayBuilder = Widget Function(BuildContext context, DateTime date);
 
 typedef OnMonthLoaded = void Function(int year, int month);

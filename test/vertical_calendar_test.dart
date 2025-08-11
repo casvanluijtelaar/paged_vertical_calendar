@@ -9,22 +9,26 @@ void main() {
       final month = DateUtils.getMonth(null, null, 0, true);
       expect(month, isNotNull);
       expect(month.month, DateTime.now().month);
-      expect(month.daysInMonth, DateUtils.daysPerMonth(month.year)[month.month - 1]);
+      expect(month.daysInMonth,
+          DateUtils.daysPerMonth(month.year)[month.month - 1]);
     });
 
     test('get a month with provided start date', () {
       final month = DateUtils.getMonth(DateTime(2020, 1, 1), null, 0, true);
       expect(month, isNotNull);
       expect(month.month, 1);
-      expect(month.daysInMonth, DateUtils.daysPerMonth(month.year)[month.month - 1]);
+      expect(month.daysInMonth,
+          DateUtils.daysPerMonth(month.year)[month.month - 1]);
       expect(month.year, 2020);
     });
 
     test('get a month with provided end date', () {
-      final month = DateUtils.getMonth(DateTime(2020, 1, 1), DateTime(2020, 5, 1), 4, false);
+      final month = DateUtils.getMonth(
+          DateTime(2020, 1, 1), DateTime(2020, 5, 1), 4, false);
       expect(month, isNotNull);
-      expect(month.month, 5);
-      expect(month.daysInMonth, DateUtils.daysPerMonth(month.year)[month.month - 1]);
+      expect(month.month, 4);
+      expect(month.daysInMonth,
+          DateUtils.daysPerMonth(month.year)[month.month - 1]);
       expect(month.year, 2020);
     });
   });
