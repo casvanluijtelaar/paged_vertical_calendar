@@ -29,25 +29,26 @@ enum PaginationDirection {
 ///        ),
 /// ```
 class PagedVerticalCalendar extends StatefulWidget {
-  PagedVerticalCalendar({
-    this.minDate,
-    this.maxDate,
-    DateTime? initialDate,
-    this.monthBuilder,
-    this.dayBuilder,
-    this.addAutomaticKeepAlives = false,
-    this.onDayPressed,
-    this.onMonthLoaded,
-    this.onPaginationCompleted,
-    this.invisibleMonthsThreshold = 1,
-    this.physics,
-    this.scrollController,
-    this.listPadding = EdgeInsets.zero,
-    this.startWeekWithSunday = false,
-    this.weekdaysToHide = const [],
-    this.reverse = false,
-    this.dayAspectRatio = 1,
-  }) : this.initialDate = initialDate ?? DateTime.now().removeTime();
+  PagedVerticalCalendar(
+      {this.minDate,
+      this.maxDate,
+      DateTime? initialDate,
+      this.monthBuilder,
+      this.dayBuilder,
+      this.addAutomaticKeepAlives = false,
+      this.onDayPressed,
+      this.onMonthLoaded,
+      this.onPaginationCompleted,
+      this.invisibleMonthsThreshold = 1,
+      this.physics,
+      this.scrollController,
+      this.listPadding = EdgeInsets.zero,
+      this.startWeekWithSunday = false,
+      this.weekdaysToHide = const [],
+      this.reverse = false,
+      this.dayAspectRatio = 1,
+      super.key})
+      : initialDate = initialDate ?? DateTime.now().removeTime();
 
   /// the [DateTime] to start the calendar from, if no [startDate] is provided
   /// `DateTime.now()` will be used
@@ -124,7 +125,7 @@ class PagedVerticalCalendar extends StatefulWidget {
   final double dayAspectRatio;
 
   @override
-  _PagedVerticalCalendarState createState() => _PagedVerticalCalendarState();
+  State<PagedVerticalCalendar> createState() => _PagedVerticalCalendarState();
 }
 
 class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
@@ -215,7 +216,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
       return [month];
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 
@@ -235,7 +236,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 
       return [month];
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 
@@ -323,7 +324,7 @@ class _PagedVerticalCalendarState extends State<PagedVerticalCalendar> {
 }
 
 class _MonthView extends StatelessWidget {
-  _MonthView({
+  const _MonthView({
     required this.month,
     this.monthBuilder,
     this.dayBuilder,
@@ -426,7 +427,7 @@ class _DefaultMonthView extends StatelessWidget {
 class _DefaultDayView extends StatelessWidget {
   final DateTime date;
 
-  _DefaultDayView({required this.date});
+  const _DefaultDayView({required this.date});
 
   @override
   Widget build(BuildContext context) {

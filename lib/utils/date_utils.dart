@@ -83,11 +83,11 @@ abstract class DateUtils {
     return Month(weeks);
   }
 
-  static int getWeekDay(DateTime _date, bool startWeekWithSunday) {
+  static int getWeekDay(DateTime date, bool startWeekWithSunday) {
     if (startWeekWithSunday) {
-      return _date.weekday == DateTime.sunday ? 1 : _date.weekday + 1;
+      return date.weekday == DateTime.sunday ? 1 : date.weekday + 1;
     } else {
-      return _date.weekday;
+      return date.weekday;
     }
   }
 
@@ -202,14 +202,14 @@ extension DateUtilsExtensions on DateTime {
 
   DateTime addDays(int daysToAdd) {
     return DateTime(
-      this.year,
-      this.month,
-      this.day + daysToAdd,
-      this.hour,
-      this.minute,
-      this.second,
-      this.millisecond,
-      this.microsecond,
+      year,
+      month,
+      day + daysToAdd,
+      hour,
+      minute,
+      second,
+      millisecond,
+      microsecond,
     );
   }
 }
