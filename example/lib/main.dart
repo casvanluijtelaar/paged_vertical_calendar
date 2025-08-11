@@ -9,6 +9,8 @@ void main() => runApp(Home());
 /// a simple example showing several ways this package can be used
 /// to implement calendar related interfaces.
 class Home extends StatelessWidget {
+  const Home({super.key});
+
   @override
   Widget build(BuildContext context) => MaterialApp(
         home: DefaultTabController(
@@ -39,6 +41,8 @@ class Home extends StatelessWidget {
 
 /// simple demonstration of the calendar customizability
 class Custom extends StatelessWidget {
+  const Custom({super.key});
+
   @override
   Widget build(BuildContext context) {
     return PagedVerticalCalendar(
@@ -111,8 +115,10 @@ class Custom extends StatelessWidget {
 /// simple example showing how to make a basic date range picker with
 /// UI indication
 class DatePicker extends StatefulWidget {
+  const DatePicker({super.key});
+
   @override
-  _DatePickerState createState() => _DatePickerState();
+  State<DatePicker> createState() => _DatePickerState();
 }
 
 class _DatePickerState extends State<DatePicker> {
@@ -150,14 +156,17 @@ class _DatePickerState extends State<DatePicker> {
       onDayPressed: (date) {
         setState(() {
           // if start is null, assign this date to start
-          if (start == null)
+          if (start == null) {
             start = date;
+          }
+
           // if only end is null assign it to the end
-          else if (end == null)
+          else if (end == null) {
             end = date;
+          }
+
           // if both start and end arent null, show results and reset
           else {
-            print('selected range from $start to $end');
             start = null;
             end = null;
           }
@@ -170,8 +179,10 @@ class _DatePickerState extends State<DatePicker> {
 /// simple example on how to display paginated data in the calendar and interact
 /// with it.
 class Pagination extends StatefulWidget {
+  const Pagination({super.key});
+
   @override
-  _PaginationState createState() => _PaginationState();
+  State<Pagination> createState() => _PaginationState();
 }
 
 class _PaginationState extends State<Pagination> {
@@ -227,8 +238,7 @@ class _PaginationState extends State<Pagination> {
       onDayPressed: (day) {
         // when a day is pressed we can check which events are linked to this
         // day and do something with them. e.g. open a new page
-        final eventsThisDay = items.where((e) => e == day);
-        print('items this day: $eventsThisDay');
+        // e.g. `final eventsThisDay = items.where((e) => e == day);`
       },
     );
   }

@@ -14,13 +14,14 @@ abstract class DateUtils {
 
     // if this is not the first month in this calendar then calculate a new
     // start date for this month
-    if (monthPage > 0) {
+    if (monthPage > 1) {
+      final offset = monthPage - 1;
       if (up) {
-        // fetsch up: month will be subtructed
-        startDate = DateTime(startDate.year, startDate.month - monthPage, 1);
+        // fetch up: month will be subtracted
+        startDate = DateTime(startDate.year, startDate.month - offset, 1);
       } else {
         // fetch down: month will be added
-        startDate = DateTime(startDate.year, startDate.month + monthPage, 1);
+        startDate = DateTime(startDate.year, startDate.month + offset, 1);
       }
     }
 
@@ -82,11 +83,11 @@ abstract class DateUtils {
     return Month(weeks);
   }
 
-  static int getWeekDay(DateTime _date, bool startWeekWithSunday) {
+  static int getWeekDay(DateTime date, bool startWeekWithSunday) {
     if (startWeekWithSunday) {
-      return _date.weekday == DateTime.sunday ? 1 : _date.weekday + 1;
+      return date.weekday == DateTime.sunday ? 1 : date.weekday + 1;
     } else {
-      return _date.weekday;
+      return date.weekday;
     }
   }
 
@@ -201,14 +202,14 @@ extension DateUtilsExtensions on DateTime {
 
   DateTime addDays(int daysToAdd) {
     return DateTime(
-      this.year,
-      this.month,
-      this.day + daysToAdd,
-      this.hour,
-      this.minute,
-      this.second,
-      this.millisecond,
-      this.microsecond,
+      year,
+      month,
+      day + daysToAdd,
+      hour,
+      minute,
+      second,
+      millisecond,
+      microsecond,
     );
   }
 }
