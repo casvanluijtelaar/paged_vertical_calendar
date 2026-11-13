@@ -377,10 +377,12 @@ class _MonthView extends StatelessWidget {
 
             return AspectRatio(
               aspectRatio: dayAspectRatio,
-              child: InkWell(
-                onTap: onDayPressed == null ? null : () => onDayPressed!(date),
-                child: dayBuilder?.call(context, date) ??
-                    _DefaultDayView(date: date),
+              child: Material(
+                child: InkWell(
+                  onTap: onDayPressed == null ? null : () => onDayPressed!(date),
+                  child: dayBuilder?.call(context, date) ??
+                      _DefaultDayView(date: date),
+                ),
               ),
             );
           },
