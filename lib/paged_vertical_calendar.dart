@@ -378,6 +378,7 @@ class _MonthView extends StatelessWidget {
             return AspectRatio(
               aspectRatio: dayAspectRatio,
               child: Material(
+                color: Colors.transparent,
                 child: InkWell(
                   onTap: onDayPressed == null ? null : () => onDayPressed!(date),
                   child: dayBuilder?.call(context, date) ??
